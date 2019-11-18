@@ -1,19 +1,40 @@
+class wheel():
+    def wheel():
+        valves = {} #Holds the pin location to control the valves objects
+        sensors = {} #Holds the pin locations for the sensors objects
+        pump = {} #Holds the two pumps objects these objects are made up of direction and pin value
+    
+    def read_sensor(sensor_location):
+    pass
 
-ultrasonic.threshold_distance = 0.5
-ultrasonic = DistanceSensor(echo=17, trigger=4, threshold_distance=0.5)
+    def control_valve(valve_location):
+    pass
 
-from gpiozero import DistanceSensor
-ultrasonic = DistanceSensor(echo=17, trigger=4)
+    def control_pump(pump_location, voltage):
+    pass
+    
+    
+    
+class GUI():
+  def run_web_Ui(): #make threadable
+  pass
+  
+    
+def main(): #make threadable
+    upper_threshold = 3.4
+    lower_threshold = 3.6
+pass
 
-while True:
-    ultrasonic.wait_for_in_range()
-    print("In range")
-    ultrasonic.wait_for_out_of_range()
-    print("Out of range")
-    
-    
-    
-    
+def reload_config():
+pass
+
+def save_config():
+pass
+
+
+
+
+
 # 1 sensor def
 # 2 pump def
 # Web ui class
