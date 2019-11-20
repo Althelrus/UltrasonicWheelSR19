@@ -1,3 +1,6 @@
+# https://www.waveshare.com/wiki/High-Precision_AD/DA_Board
+
+
 class wheel():
     def wheel():
         valves = {} #Holds the pin location to control the valves objects
