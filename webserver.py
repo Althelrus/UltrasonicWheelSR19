@@ -8,12 +8,12 @@ app = Flask(__name__)
 
 @app.route('/')
 def home():
-    return render_template("html/home.html")
+    return render_template("home.html")
 
 
 @app.route('/about/')
 def about():
-    return render_template("html/about.html")
+    return render_template("about.html")
 
     #form = '''
     #                < form action = "post.html" method = "post" >

@@ -10,27 +10,27 @@ import sys
 import os
 from ADS1256_definitions import *
 from pipyadc import ADS1256
-        
-class wheel():
-    def wheel():
-        valves = {}     #Holds the pin location to control the valves objects
-        sensors = {}    #Holds the pin locations for the sensors objects
-        pump = {}       #Holds the two pumps objects these objects are made up of direction and pin value
+
+
+class Wheel:
+    def wheel(self):
+        valves = {}     # Holds the pin location to control the valves objects
+        sensors = {}    # Holds the pin locations for the sensors objects
+        pump = {}       # Holds the two pumps objects these objects are made up of direction and pin value
     
     def read_sensor(sensor_location):
         raw_channels = ads.read_sequence(CH_SEQUENCE)
-        voltages     = [i * ads.v_per_digit for i in raw_channels]
+        voltages = [i * ads.v_per_digit for i in raw_channels]
 
-    def control_valve(valve_location, freq):
-        p = IO.PWM(valve_location, 100)         #GPIO as PWM output, with 100Hz frequency
-        p.start(0)                              #generate PWM signal with 0% duty cycle  
-        p.ChangeDutyCycle(freq)                 #change duty cycle for varying the brightness of LED.
+    def control_valve(valve_location, freq, dutyratio):
+        p = IO.PWM(valve_location, freq)         # GPIO as PWM output, with 100Hz frequency
+        p.start(0)                               # generate PWM signal with 0% duty cycle
+        p.ChangeDutyCycle(dutyratio)             # change duty cycle for varying the brightness of LED.
 
-
-    def control_pump(pump_location, freq):
-        p = IO.PWM(pump_location, 100)          #GPIO as PWM output, with 100Hz frequency
-        p.start(0)                              #generate PWM signal with 0% duty cycle  
-        p.ChangeDutyCycle(freq)                 #change duty cycle for varying the brightness of LED.
+    def control_pump(pump_location, freq, dutyratio):
+        p = IO.PWM(pump_location, freq)          # GPIO as PWM output, with 100Hz frequency
+        p.start(0)                               # generate PWM signal with 0% duty cycle
+        p.ChangeDutyCycle(dutyratio)             # change duty cycle for varying the brightness of LED.
     
     
 class GUI():
