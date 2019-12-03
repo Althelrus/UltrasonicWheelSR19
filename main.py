@@ -34,14 +34,14 @@ class Wheel:
     
     
 class GUI():
-    def GUI():
+    def GUI(self):
         pass
     
-    def run_web_Ui(): #make threadable
+    def run_web_Ui(self): # make threadable
         pass
 
     
-if __name__ == "main": #make threadable
+if __name__ == "main": # make threadable
     
     if not os.path.exists("/dev/spidev0.1"):
         raise IOError("Error: No SPI device. Check settings in /boot/config.txt")
@@ -51,17 +51,19 @@ if __name__ == "main": #make threadable
     ads.cal_self()
     
     try:
-        reload_config() # Load Config
+        reload_config()  # Load Config
     except:
-        set_contants()  # Set default contants for first time boot
-        make_config()   # make config if not there
+        set_contants()   # Set default contants for first time boot
+        make_config()    # make config if not there
         
     set_pins()      # Set Pins
     GUI()           # Init web UI
-   
+
+
 def set_contants():
     upper_threshold = 3.4
     lower_threshold = 3.6
+
 
 def set_pins():             # sets all of the pins based off the config
     IO.setwarnings(False)       # do not show any warnings
@@ -76,9 +78,9 @@ def set_pins():             # sets all of the pins based off the config
     # on the Waveshare board is set.
     #
     # Input pin for the potentiometer on the Waveshare Precision ADC board:
-    #POTI = POS_AIN0|NEG_AINCOM
+    # POTI = POS_AIN0|NEG_AINCOM
     # Light dependant resistor of the same board:
-    #LDR  = POS_AIN1|NEG_AINCOM
+    # LDR  = POS_AIN1|NEG_AINCOM
     # The other external input screw terminals of the Waveshare board:
     EXT2, EXT3, EXT4 = POS_AIN2|NEG_AINCOM, POS_AIN3|NEG_AINCOM, POS_AIN4|NEG_AINCOM
     EXT5, EXT6, EXT7 = POS_AIN5|NEG_AINCOM, POS_AIN6|NEG_AINCOM, POS_AIN7|NEG_AINCOM
@@ -86,19 +88,21 @@ def set_pins():             # sets all of the pins based off the config
     # You can connect any pin as well to the positive as to the negative ADC input.
     # The following reads the voltage of the potentiometer with negative polarity.
     # The ADC reading should be identical to that of the POTI channel, but negative.
-    #POTI_INVERTED = POS_AINCOM|NEG_AIN0
+    # POTI_INVERTED = POS_AINCOM|NEG_AIN0
 
     # For fun, connect both ADC inputs to the same physical input pin.
     # The ADC should always read a value close to zero for this.
-    #SHORT_CIRCUIT = POS_AIN0|NEG_AIN0
+    # SHORT_CIRCUIT = POS_AIN0|NEG_AIN0
 
     # Specify here an arbitrary length list (tuple) of arbitrary input channel pair
     # eight-bit code values to scan sequentially from index 0 to last.
     # Eight channels fit on the screen nicely for this example..
     CH_SEQUENCE = (EXT2, EXT3, EXT4, EXT7)
 
+
 def reload_config():
     pass
+
 
 def save_config():
     pass

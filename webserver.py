@@ -7,13 +7,13 @@ app = Flask(__name__)
 
 @app.route('/')
 def home():
-    x = "home.html"
+    x = "/UltrasonicWheelSR19/html/home.html"
     return render_template(x)
 
 
 @app.route('/about/')
 def about():
-    x = "about.html"
+    x = "SeniorDesgin19/UltrasonicWheelSR19/html/about.html"
     return render_template(x)
 
 
