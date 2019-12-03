@@ -2,18 +2,23 @@
 
 from flask import Flask, render_template
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='html')
 
 
 @app.route('/')
 def home():
-    x = "/UltrasonicWheelSR19/html/home.html"
+    x = "home.html"
     return render_template(x)
 
 
 @app.route('/about/')
 def about():
-    x = "SeniorDesgin19/UltrasonicWheelSR19/html/about.html"
+    x = "about.html"
+    return render_template(x)
+
+@app.route('/setting/')
+def about():
+    x = "setting.html"
     return render_template(x)
 
 
