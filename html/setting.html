@@ -7,7 +7,7 @@
     <title>Setting</title>
     <meta name="description" content="Train Sensor Dashboard">
     <link rel="stylesheet" href="{{url_for('static',filename='css/style.css')}}">
-    <script src="script.js"></script>
+    <script src="{{url_for('static',filename='js/script.js')}}"></script>
 </head>
 
 <body>
@@ -22,26 +22,37 @@
 		</nav>
 	</header>
 	<section>
-		<strong>Demonstration of a simple page layout using HTML5 tags: header, nav, section, main, article, aside, footer, address.</strong>
+		<strong>Change Constants and Check Current Ones</strong>
 	</section>
 	<section id="pageContent">
 		<main role="main">
-			<article>
-				<h2>Stet facilis ius te</h2>
-				<p>Lorem ipsum dolor sit amet, nonumes voluptatum mel ea, cu case ceteros cum. Novum commodo malorum vix ut. Dolores consequuntur in ius, sale electram dissentiunt quo te. Cu duo omnes invidunt, eos eu mucius fabellas. Stet facilis ius te, quando voluptatibus eos in. Ad vix mundi alterum, integre urbanitas intellegam vix in.</p>
-			</article>
-			<article>
-				<h2>Illud mollis moderatius</h2>
-				<p>Eum facete intellegat ei, ut mazim melius usu. Has elit simul primis ne, regione minimum id cum. Sea deleniti dissentiet ea. Illud mollis moderatius ut per, at qui ubique populo. Eum ad cibo legimus, vim ei quidam fastidii.</p>
-			</article>
-			<article>
-				<h2>Ex ignota epicurei quo</h2>
-				<p>Quo debet vivendo ex. Qui ut admodum senserit partiendo. Id adipiscing disputando eam, sea id magna pertinax concludaturque. Ex ignota epicurei quo, his ex doctus delenit fabellas, erat timeam cotidieque sit in. Vel eu soleat voluptatibus, cum cu exerci mediocritatem. Malis legere at per, has brute putant animal et, in consul utamur usu.</p>
-			</article>
-			<article>
-				<h2>His at autem inani volutpat</h2>
-				<p>Te has amet modo perfecto, te eum mucius conclusionemque, mel te erat deterruisset. Duo ceteros phaedrum id, ornatus postulant in sea. His at autem inani volutpat. Tollit possit in pri, platonem persecuti ad vix, vel nisl albucius gloriatur no.</p>
-			</article>
+			<link rel="stylesheet" href="formoid_files/formoid1/formoid-solid-blue.css" type="text/css" />
+<script type="text/javascript" src="formoid_files/formoid1/jquery.min.js"></script>
+<form class="formoid-solid-blue" style="background-color:#FFFFFF;font-size:14px;font-family:'Roboto',Arial,Helvetica,sans-serif;color:#34495E;max-width:480px;min-width:150px" method="post"><div class="title"><h2>Edit Constants</h2></div>
+	<div class="element-separator" title="used to figure out how much the pump will fill or drain by"><hr><h3 class="section-break-title">Delta</h3></div>
+	<div class="element-input"><label class="title"></label><div class="item-cont"><input class="large" type="text" name="input" placeholder="Delta"/><span class="icon-place"></span></div></div>
+	<div class="element-separator"><hr><h3 class="section-break-title">Connected Wheels</h3></div>
+	<div class="element-checkbox" title="Select which sensor and wheels that are connected"><label class="title">Active Wheels</label>		<div class="column column2"><label><input type="checkbox" name="checkbox[]" value="Sensor 1"/ ><span>Sensor 1</span></label><label><input type="checkbox" name="checkbox[]" value="Sensor 3"/ ><span>Sensor 3</span></label><label><input type="checkbox" name="checkbox[]" value="Sensor 5"/ ><span>Sensor 5</span></label></div><span class="clearfix"></span>
+		<div class="column column2"><label><input type="checkbox" name="checkbox[]" value="Sensor 2"/ ><span>Sensor 2</span></label><label><input type="checkbox" name="checkbox[]" value="Sensor 4"/ ><span>Sensor 4</span></label><label><input type="checkbox" name="checkbox[]" value="Sensor 6"/ ><span>Sensor 6</span></label></div><span class="clearfix"></span>
+</div>
+	<div class="element-separator"><hr><h3 class="section-break-title">Sensor Location on PLC</h3></div>
+	<div class="element-input" title="Location on PLC where the sensor is connected"><label class="title"></label><div class="item-cont"><input class="large" type="text" name="input1" placeholder="Sensor 1 pin location"/><span class="icon-place"></span></div></div>
+	<div class="element-input" title="Location on PLC where the sensor is connected"><label class="title"></label><div class="item-cont"><input class="large" type="text" name="input2" placeholder="Sensor 2 pin location"/><span class="icon-place"></span></div></div>
+	<div class="element-input" title="Location on PLC where the sensor is connected"><label class="title"></label><div class="item-cont"><input class="large" type="text" name="input3" placeholder="Sensor 3 pin location"/><span class="icon-place"></span></div></div>
+	<div class="element-input" title="Location on PLC where the sensor is connected"><label class="title"></label><div class="item-cont"><input class="large" type="text" name="input4" placeholder="Sensor 4 pin location"/><span class="icon-place"></span></div></div>
+	<div class="element-input" title="Location on PLC where the sensor is connected"><label class="title"></label><div class="item-cont"><input class="large" type="text" name="input5" placeholder="Sensor 5 pin location"/><span class="icon-place"></span></div></div>
+	<div class="element-input" title="Location on PLC where the sensor is connected"><label class="title"></label><div class="item-cont"><input class="large" type="text" name="input6" placeholder="Sensor 6 pin location"/><span class="icon-place"></span></div></div>
+	<div class="element-separator"><hr><h3 class="section-break-title">Valve Location on PLC</h3></div>
+	<div class="element-input"><label class="title"></label><div class="item-cont"><input class="large" type="text" name="input9" placeholder="Valve 1 pin location"/><span class="icon-place"></span></div></div>
+	<div class="element-input"><label class="title"></label><div class="item-cont"><input class="large" type="text" name="input14" placeholder="Valve 2 pin location"/><span class="icon-place"></span></div></div>
+	<div class="element-input"><label class="title"></label><div class="item-cont"><input class="large" type="text" name="input13" placeholder="Valve 3 pin location"/><span class="icon-place"></span></div></div>
+	<div class="element-input"><label class="title"></label><div class="item-cont"><input class="large" type="text" name="input12" placeholder="Valve 4 pin location"/><span class="icon-place"></span></div></div>
+	<div class="element-input"><label class="title"></label><div class="item-cont"><input class="large" type="text" name="input11" placeholder="Valve 5 pin location"/><span class="icon-place"></span></div></div>
+	<div class="element-input"><label class="title"></label><div class="item-cont"><input class="large" type="text" name="input10" placeholder="Valve 6 pin location"/><span class="icon-place"></span></div></div>
+	<div class="element-separator"><hr><h3 class="section-break-title">Pump Locations on PLC</h3></div>
+	<div class="element-input" title="Location on PLC where the Pump is connected"><label class="title"></label><div class="item-cont"><input class="large" type="text" name="input7" placeholder="Pump 1 pin location"/><span class="icon-place"></span></div></div>
+	<div class="element-input" title="Location on PLC where the pump is connected"><label class="title"></label><div class="item-cont"><input class="large" type="text" name="input8" placeholder="Pump 2 pin location"/><span class="icon-place"></span></div></div>
+<div class="submit"><input type="submit" value="Submit"/></div></form><p class="frmd"><a href="http://formoid.com/v29.php">html form</a> Formoid.com 2.9</p><script type="text/javascript" src="formoid_files/formoid1/formoid-solid-blue.js"></script>
 		</main>
 		<aside>
 			<div>Sidebar 1</div>
@@ -50,7 +61,7 @@
 		</aside>
 	</section>
 	<footer>
-		<p>&copy; You can copy, edit and publish this template but please leave a link to our website | <a href="https://html5-templates.com/" target="_blank" rel="nofollow">HTML5 Templates</a></p>
+		<p>&copy; By Train Sensor Group</p>
 		<address>
 			Contact: <a href="mailto:me@jrami1@unh.newhaven.edu">Mail me</a>
 		</address>
