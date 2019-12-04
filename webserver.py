@@ -10,22 +10,22 @@ app = Flask(__name__, template_folder='html')
 
 
 @app.route('/')
-def about():
-    return render_template("home.html")
+def home():
+    return render_template("home.html", data='test')
 
 
-@app.route('/about/')
+@app.route('/about_application/')
 def about():
-    return render_template("about.html")
+    return render_template("about.html", data='test')
 
 
 @app.route('/setting/')
 def setting():
-    return render_template("setting.html")
+    return render_template("setting.html", data='test')
 
 
 @app.route('/graph/')
-def hello_world():
+def graph():
     return render_template('index.html', data='test')
 
 
