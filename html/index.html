@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Flask Highcharts Live Data Demo</title>
+    <title>Pressure Over Time</title>
 
           <!-- Bootstrap -->
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
@@ -17,27 +17,19 @@
     <![endif]-->
   </head>
   <body>
-  <header>
-		<div id="logo"><img src="/logo.png">Train&nbsp;Sensor</div>
-		<nav>
-			<ul>
-				<li><a href="{{url_for('home')}}">Dashboard</a>
-				<li><a href="{{url_for('setting')}}">Settings</a>
-				<li><a href="{{url_for('about')}}">About</a>
-			</ul>
-		</nav>
-	</header>
     <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
       <div class="container-fluid">
         <div class="navbar-header">
-          <a class="navbar-brand" href="/">Flask-Live-Chart</a>
+          <a class="navbar-brand" href="/">Dashboard</a>
         </div>
         <!-- Collect the nav links, forms, and other content for toggling -->
-{#        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">#}
-{#          <ul class="nav navbar-nav">#}
-{#            <li><a href="#">A link</a></li>#}
-{#          </ul>#}
-{#        </div><!-- /.navbar-collapse -->#}
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+          <ul class="nav navbar-nav">
+				<li><a href="{{url_for('setting')}}">Settings</a>
+				<li><a href="{{url_for('about')}}">About</a>
+              <li><a href="{{url_for('graph')}}">Graph</a>
+{         </ul>
+       </div><!-- /.navbar-collapse -->
       </div>
     </div>
 
