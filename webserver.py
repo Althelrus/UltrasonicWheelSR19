@@ -16,8 +16,9 @@ def about():
     x = "about.html"
     return render_template(x)
 
+
 @app.route('/setting/')
-def about():
+def setting():
     x = "setting.html"
     return render_template(x)
 
