@@ -30,7 +30,7 @@
             <div>
                 <div class="container-fluid">
                     {% from "_formhelpers.html" import render_field %}
-                    <form method=post>
+                    <form class="formoid-solid-blue" action="{{ url_for('setting_data') }}"  style="background-color:#FFFFFF;font-size:14px;font-family:'Roboto',Arial,Helvetica,sans-serif;color:#34495E;max-width:480px;min-width:150px" method="post">
                       <dl>
                           <div class="element-separator"><hr><h3 class="section-break-title">Delta</h3></div>
                           {{ render_field(form.delta) }}
