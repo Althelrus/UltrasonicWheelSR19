@@ -26,9 +26,48 @@
 	<section>
 		<strong>Change Constants and Check Current Ones</strong>
 	</section>
+    <aside>
+            <div>
+                <div class="container-fluid">
+                    {% from "_formhelpers.html" import render_field %}
+                    <form method=post>
+                      <dl>
+                          <div class="element-separator"><hr><h3 class="section-break-title">Delta</h3></div>
+                          {{ render_field(form.delta) }}
+                          <div class="element-separator"><hr><h3 class="section-break-title">Active Wheels</h3></div>
+                          {{ render_field(form.activewheels1) }}
+                          {{ render_field(form.activewheels2) }}
+                          {{ render_field(form.activewheels3) }}
+                          {{ render_field(form.activewheels4) }}
+                          {{ render_field(form.activewheels5) }}
+                          {{ render_field(form.activewheels6) }}
+                          <div class="element-separator"><hr><h3 class="section-break-title">Sensor Location on PLC</h3></div>
+                          {{ render_field(form.sensorlocation1) }}
+                          {{ render_field(form.sensorlocation2) }}
+                          {{ render_field(form.sensorlocation3) }}
+                          {{ render_field(form.sensorlocation4) }}
+                          {{ render_field(form.sensorlocation5) }}
+                          {{ render_field(form.sensorlocation6) }}
+                          <div class="element-separator"><hr><h3 class="section-break-title">Valve Location on PLC</h3></div>
+                          {{ render_field(form.valvelocation1) }}
+                          {{ render_field(form.valvelocation2) }}
+                          {{ render_field(form.valvelocation3) }}
+                          {{ render_field(form.valvelocation4) }}
+                          {{ render_field(form.valvelocation5) }}
+                          {{ render_field(form.valvelocation6) }}
+                          <div class="element-separator"><hr><h3 class="section-break-title">Pump Location on PLC</h3></div>
+                          {{ render_field(form.pumplocation1) }}
+                          {{ render_field(form.pumplocation2) }}
+                      </dl>
+                      <p><input type=submit value=Submit>
+                    </form>
+                </div>
+                  <!-- Example row of columns -->
+                </div>
+            </div>
+		</aside>
 	<section id="pageContent">
 		<main role="main">
-
             <script type="text/javascript" src="{{url_for('static',filename='js/jquery.min.js')}}"></script>
             <form class="formoid-solid-blue" action="{{ url_for('setting_data') }}"  style="background-color:#FFFFFF;font-size:14px;font-family:'Roboto',Arial,Helvetica,sans-serif;color:#34495E;max-width:480px;min-width:150px" method="post">
                 <div class="title"><h2>Edit Constants</h2></div>

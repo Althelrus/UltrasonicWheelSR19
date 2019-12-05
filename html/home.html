@@ -23,25 +23,25 @@
 		</nav>
 	</header>
 	<section>
-		<strong>Live Feed of All Real Time Data</strong>
+		<strong>Live Feed of All Real Time Data  Elapsed time: {{ g.request_time() }}</strong>
 	</section>
 	<section id="pageContent">
 		<main role="main">
 			<article>
 				<h2>Pump IN Current Voltage</h2>
-				<p> </p>
+				<p>{{ g.data_pumpIn() }}</p>
 			</article>
 			<article>
 				<h2>Pump OUT Current Voltage</h2>
-				<p></p>
+				<p>{{g.data_pumpOut()}}</p>
 			</article>
 			<article>
 				<h2>Valve 1 Status</h2>
-				<p></p>
+				<p>{{g.data_valveStatus()}}</p>
 			</article>
 			<article>
 				<h2></h2>
-				<p></p>
+				<p><div id="empty"></div></p>
 			</article>
 		</main>
 		<aside>
