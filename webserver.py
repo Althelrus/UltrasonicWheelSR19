@@ -17,7 +17,7 @@ def before_request():
     g.request_time = lambda: "%.5fs" % (time.time() - g.request_start_time)
     g.data_pumpIn = lambda: "%.2fV" % 12
     g.data_pumpOut = lambda: "%.2fV" % 13
-    g.data_valveStatus = lambda: "True"
+    g.data_valveStatus = lambda: "Open"
 
 
 @app.route('/')
@@ -75,6 +75,8 @@ def setting_data():
               form.valvelocation6.data,
               form.pumplocation1.data,
               form.pumplocation2.data]
+    # sc = SaveConstants
+    # sc.saveconfig(g.data)
     print(g.data)
     return render_template('setting.html', form=form)
 
@@ -101,6 +103,19 @@ class RegistrationForm(wtforms.Form):
     valvelocation6 = wtforms.StringField('Valve Location 6', [wtforms.validators.Length(min=0, max=3)])
     pumplocation1 = wtforms.StringField('Pump Location 1', [wtforms.validators.Length(min=0, max=3)])
     pumplocation2 = wtforms.StringField('Pump Location 2', [wtforms.validators.Length(min=0, max=3)])
+
+
+class SaveConstants:
+    def saveconfig(self, data):
+        with open('data.txt', 'w') as outfile:
+            json.dump(data, outfile, indent=4)
+
+    def loadconfig(self):
+        with open('data.txt') as json_file:
+            data = json.load(json_file)
+        for p in data:
+            print(p)
+        return data
 
 
 if __name__ == '__main__':
