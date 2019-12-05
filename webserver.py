@@ -30,20 +30,6 @@ def about():
     return render_template("about.html")
 
 
-@app.route('/setting_data')
-def setting_data():
-    # data = [request.form['input'], request.form['input1'], request.form['input2'],
-     #       request.form['input3'], request.form['input4'], request.form['input5']
-     #       , request.form['input6'], request.form['input7'], request.form['input8'],  request.form['input9']
-     #       , request.form['input10'], request.form['input11'], request.form['input12'],  request.form['input13']
-     #       , request.form['input14'], request.form['checkbox[]']]
-    # response = make_response(json.dumps(data))
-    # response.content_type = 'application/json'
-    # print(response)
-    # return response
-    return 1
-
-
 @app.route('/setting')
 def setting():
     form = RegistrationForm(request.form)
@@ -65,37 +51,56 @@ def live_data():
     return response
 
 
-@app.route('/register', methods=['GET', 'POST'])
-def register():
+@app.route('/setting_data', methods=['GET', 'POST'])
+def setting_data():
     form = RegistrationForm(request.form)
-    if request.method == 'POST' and form.validate():
-        flash('Thanks for registering')
-        return redirect(url_for('login'))
-    return render_template('register.html', form=form)
+    g.data = [form.delta.data,
+              form.activewheels1.data,
+              form.activewheels2.data,
+              form.activewheels3.data,
+              form.activewheels4.data,
+              form.activewheels5.data,
+              form.activewheels6.data,
+              form.sensorlocation1.data,
+              form.sensorlocation2.data,
+              form.sensorlocation3.data,
+              form.sensorlocation4.data,
+              form.sensorlocation5.data,
+              form.sensorlocation6.data,
+              form.valvelocation1.data,
+              form.valvelocation2.data,
+              form.valvelocation3.data,
+              form.valvelocation4.data,
+              form.valvelocation5.data,
+              form.valvelocation6.data,
+              form.pumplocation1.data,
+              form.pumplocation2.data]
+    print(g.data)
+    return render_template('setting.html', form=form)
 
 
 class RegistrationForm(wtforms.Form):
-    delta = wtforms.IntegerField('Delta')
-    activewheels1 = wtforms.BooleanField('Active Wheels')
-    activewheels2 = wtforms.BooleanField('Active Wheels')
-    activewheels3 = wtforms.BooleanField('Active Wheels')
-    activewheels4 = wtforms.BooleanField('Active Wheels')
-    activewheels5 = wtforms.BooleanField('Active Wheels')
-    activewheels6 = wtforms.BooleanField('Active Wheels')
-    sensorlocation1 = wtforms.StringField('Sensor Location', [wtforms.validators.Length(min=0, max=3)])
-    sensorlocation2 = wtforms.StringField('Sensor Location', [wtforms.validators.Length(min=0, max=3)])
-    sensorlocation3 = wtforms.StringField('Sensor Location', [wtforms.validators.Length(min=0, max=3)])
-    sensorlocation4 = wtforms.StringField('Sensor Location', [wtforms.validators.Length(min=0, max=3)])
-    sensorlocation5 = wtforms.StringField('Sensor Location', [wtforms.validators.Length(min=0, max=3)])
-    sensorlocation6 = wtforms.StringField('Sensor Location', [wtforms.validators.Length(min=0, max=3)])
-    valvelocation1 = wtforms.StringField('Valve Location', [wtforms.validators.Length(min=0, max=3)])
-    valvelocation2 = wtforms.StringField('Valve Location', [wtforms.validators.Length(min=0, max=3)])
-    valvelocation3 = wtforms.StringField('Valve Location', [wtforms.validators.Length(min=0, max=3)])
-    valvelocation4 = wtforms.StringField('Valve Location', [wtforms.validators.Length(min=0, max=3)])
-    valvelocation5 = wtforms.StringField('Valve Location', [wtforms.validators.Length(min=0, max=3)])
-    valvelocation6 = wtforms.StringField('Valve Location', [wtforms.validators.Length(min=0, max=3)])
-    pumplocation1 = wtforms.StringField('Pump Location', [wtforms.validators.Length(min=0, max=3)])
-    pumplocation2 = wtforms.StringField('Pump Location', [wtforms.validators.Length(min=0, max=3)])
+    delta = wtforms.FloatField('Delta', default="0.3")
+    activewheels1 = wtforms.BooleanField('Active Wheels 1')
+    activewheels2 = wtforms.BooleanField('Active Wheels 2')
+    activewheels3 = wtforms.BooleanField('Active Wheels 3')
+    activewheels4 = wtforms.BooleanField('Active Wheels 4')
+    activewheels5 = wtforms.BooleanField('Active Wheels 5')
+    activewheels6 = wtforms.BooleanField('Active Wheels 6')
+    sensorlocation1 = wtforms.StringField('Sensor Location 1', [wtforms.validators.Length(min=0, max=3)])
+    sensorlocation2 = wtforms.StringField('Sensor Location 2', [wtforms.validators.Length(min=0, max=3)])
+    sensorlocation3 = wtforms.StringField('Sensor Location 3', [wtforms.validators.Length(min=0, max=3)])
+    sensorlocation4 = wtforms.StringField('Sensor Location 4', [wtforms.validators.Length(min=0, max=3)])
+    sensorlocation5 = wtforms.StringField('Sensor Location 5', [wtforms.validators.Length(min=0, max=3)])
+    sensorlocation6 = wtforms.StringField('Sensor Location 6', [wtforms.validators.Length(min=0, max=3)])
+    valvelocation1 = wtforms.StringField('Valve Location 1', [wtforms.validators.Length(min=0, max=3)])
+    valvelocation2 = wtforms.StringField('Valve Location 2', [wtforms.validators.Length(min=0, max=3)])
+    valvelocation3 = wtforms.StringField('Valve Location 3', [wtforms.validators.Length(min=0, max=3)])
+    valvelocation4 = wtforms.StringField('Valve Location 4', [wtforms.validators.Length(min=0, max=3)])
+    valvelocation5 = wtforms.StringField('Valve Location 5', [wtforms.validators.Length(min=0, max=3)])
+    valvelocation6 = wtforms.StringField('Valve Location 6', [wtforms.validators.Length(min=0, max=3)])
+    pumplocation1 = wtforms.StringField('Pump Location 1', [wtforms.validators.Length(min=0, max=3)])
+    pumplocation2 = wtforms.StringField('Pump Location 2', [wtforms.validators.Length(min=0, max=3)])
 
 
 if __name__ == '__main__':

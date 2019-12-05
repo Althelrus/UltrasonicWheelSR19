@@ -7,7 +7,6 @@
     <title>Setting</title>
     <meta name="description" content="Train Sensor Dashboard">
     <link rel="stylesheet" href="{{url_for('static',filename='css/style.css')}}">
-    <link rel="stylesheet" href={{url_for('static',filename='css/formoid-solid-blue.css')}} type="text/css" />
     <script src="{{url_for('static',filename='js/script.js')}}"></script>
 </head>
 
@@ -30,7 +29,7 @@
             <div>
                 <div class="container-fluid">
                     {% from "_formhelpers.html" import render_field %}
-                    <form method=post>
+                    <form action="{{ url_for('setting_data') }}" method=post>
                       <dl>
                           <div class="element-separator"><hr><h3 class="section-break-title">Delta</h3></div>
                           {{ render_field(form.delta) }}
@@ -68,40 +67,9 @@
 		</aside>
 	<section id="pageContent">
 		<main role="main">
-            <script type="text/javascript" src="{{url_for('static',filename='js/jquery.min.js')}}"></script>
-            <form class="formoid-solid-blue" action="{{ url_for('setting_data') }}"  style="background-color:#FFFFFF;font-size:14px;font-family:'Roboto',Arial,Helvetica,sans-serif;color:#34495E;max-width:480px;min-width:150px" method="post">
-                <div class="title"><h2>Edit Constants</h2></div>
-
-                <div class="element-separator" title="used to figure out how much the pump will fill or drain by"><hr><h3 class="section-break-title">Delta</h3></div>
-                <div class="element-input"><label class="title"></label><div class="item-cont"><input class="large" type="text" name="input" placeholder="Delta"/><span class="icon-place"></span></div></div>
-
-                <div class="element-separator"><hr><h3 class="section-break-title">Connected Wheels</h3></div>
-                <div class="element-checkbox" title="Select which sensor and wheels that are connected"><label class="title">Active Wheels</label>		<div class="column column2"><label><input type="checkbox" name="checkbox[]" value="Sensor 1"/><span>Sensor 1</span></label><label><input type="checkbox" name="checkbox[]" value="Sensor 3"/><span>Sensor 3</span></label><label><input type="checkbox" name="checkbox[]" value="Sensor 5"/><span>Sensor 5</span></label></div><span class="clearfix"></span>
-                    <div class="column column2"><label><input type="checkbox" name="checkbox[]" value="Sensor 2"/><span>Sensor 2</span></label><label><input type="checkbox" name="checkbox[]" value="Sensor 4"/><span>Sensor 4</span></label><label><input type="checkbox" name="checkbox[]" value="Sensor 6"/><span>Sensor 6</span></label></div><span class="clearfix"></span>
-                </div>
-                <div class="element-separator"><hr><h3 class="section-break-title">Sensor Location on PLC</h3></div>
-                <div class="element-input" title="Location on PLC where the sensor is connected"><label class="title"></label><div class="item-cont"><input class="large" type="text" name="input1" placeholder="Sensor 1 pin location"/><span class="icon-place"></span></div></div>
-                <div class="element-input" title="Location on PLC where the sensor is connected"><label class="title"></label><div class="item-cont"><input class="large" type="text" name="input2" placeholder="Sensor 2 pin location"/><span class="icon-place"></span></div></div>
-                <div class="element-input" title="Location on PLC where the sensor is connected"><label class="title"></label><div class="item-cont"><input class="large" type="text" name="input3" placeholder="Sensor 3 pin location"/><span class="icon-place"></span></div></div>
-                <div class="element-input" title="Location on PLC where the sensor is connected"><label class="title"></label><div class="item-cont"><input class="large" type="text" name="input4" placeholder="Sensor 4 pin location"/><span class="icon-place"></span></div></div>
-                <div class="element-input" title="Location on PLC where the sensor is connected"><label class="title"></label><div class="item-cont"><input class="large" type="text" name="input5" placeholder="Sensor 5 pin location"/><span class="icon-place"></span></div></div>
-                <div class="element-input" title="Location on PLC where the sensor is connected"><label class="title"></label><div class="item-cont"><input class="large" type="text" name="input6" placeholder="Sensor 6 pin location"/><span class="icon-place"></span></div></div>
-
-                <div class="element-separator"><hr><h3 class="section-break-title">Valve Location on PLC</h3></div>
-                <div class="element-input"><label class="title"></label><div class="item-cont"><input class="large" type="text" name="input9" placeholder="Valve 1 pin location"/><span class="icon-place"></span></div></div>
-                <div class="element-input"><label class="title"></label><div class="item-cont"><input class="large" type="text" name="input14" placeholder="Valve 2 pin location"/><span class="icon-place"></span></div></div>
-                <div class="element-input"><label class="title"></label><div class="item-cont"><input class="large" type="text" name="input13" placeholder="Valve 3 pin location"/><span class="icon-place"></span></div></div>
-                <div class="element-input"><label class="title"></label><div class="item-cont"><input class="large" type="text" name="input12" placeholder="Valve 4 pin location"/><span class="icon-place"></span></div></div>
-                <div class="element-input"><label class="title"></label><div class="item-cont"><input class="large" type="text" name="input11" placeholder="Valve 5 pin location"/><span class="icon-place"></span></div></div>
-                <div class="element-input"><label class="title"></label><div class="item-cont"><input class="large" type="text" name="input10" placeholder="Valve 6 pin location"/><span class="icon-place"></span></div></div>
-
-                <div class="element-separator"><hr><h3 class="section-break-title">Pump Locations on PLC</h3></div>
-                <div class="element-input" title="Location on PLC where the Pump is connected"><label class="title"></label><div class="item-cont"><input class="large" type="text" name="input7" placeholder="Pump 1 pin location"/><span class="icon-place"></span></div></div>
-                <div class="element-input" title="Location on PLC where the pump is connected"><label class="title"></label><div class="item-cont"><input class="large" type="text" name="input8" placeholder="Pump 2 pin location"/><span class="icon-place"></span></div></div>
-
-                <div class="submit"><input type="submit" value="Submit"/></div>
-            </form><script type="text/javascript" src="{{url_for('static',filename='js/formoid-solid-blue.js')}}"></script>
-            &nbsp;
+            <div class="element-separator"><hr><h3 class="section-break-title">How to Use</h3></div>
+            <div class="element-separator"><hr><h3 class="section-break-title">Pump Location on PLC</h3></div>
+            <div class="element-separator"><hr><h3 class="section-break-title">Valve Location on PLC</h3></div>
 		</main>
 	</section>
 	<footer>
