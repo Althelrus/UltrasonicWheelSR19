@@ -68,7 +68,7 @@ def set_contants():
 def set_pins():             # sets all of the pins based off the config
     IO.setwarnings(False)       # do not show any warnings
     IO.setmode (IO.BCM)         # we are programming the GPIO by BCM pin numbers. (PIN35 as ‘GPIO19’)
-    IO.setup(19,IO.OUT)         # initialize GPIO19 as an output.
+    IO.setup(23,IO.OUT)         # initialize GPIO19 as an output.
     # ==> Each channel in this context represents a differential pair of physical
     # input pins of the ADS1256 input multiplexer.
     #
