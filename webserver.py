@@ -5,7 +5,6 @@ import json
 import time
 from random import random
 import wtforms
-from bottle import redirect
 from flask import Flask, render_template, make_response, request, g, flash, url_for
 
 app = Flask(__name__, template_folder='html')
