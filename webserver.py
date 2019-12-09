@@ -2,10 +2,13 @@
 # http://pwp.stevecassidy.net/bottle/forms-processing.html
 
 import json
-import time
+import time, os
 from random import random
 import wtforms
 from flask import Flask, render_template, make_response, request, g, flash, url_for
+from ADS1256_definitions import *
+from pipyadc import ADS1256
+import RPi.GPIO as GPIO
 
 app = Flask(__name__, template_folder='html')
 
@@ -48,6 +51,44 @@ def live_data():
     response.content_type = 'application/json'
     print(response)
     return response
+
+
+@app.route('/get_sensor_data')
+def get_sensor_data():
+    volts = wheels.read_sensor(g.CH_SEQUENCE)
+    if -1 <= volts[1] < 0.5:
+        wheels.control_pump(g.p, 100)
+        print("One")
+    elif 0.5 <= volts[1] < 1:
+        wheels.control_pump(g.p, 66)
+        print("Two")
+    elif 1 <= volts[1] < 2:
+        wheels.control_pump(g.p, 33)
+        print("Three")
+    elif 2 <= volts[1]:
+        wheels.control_pump(g.p, 0)
+        print("Four")
+    return "get_sensor_data"
+
+
+def set_contants():
+    g.upper_threshold = 3.4
+    g.lower_threshold = 3.6
+
+
+def set_pins():
+    g.pin_sensor1 = 37
+    GPIO.setwarnings(False)  # do not show any warnings
+    GPIO.setmode(GPIO.BOARD)  # we are programming the GPIO by BCM pin numbers. (PIN35 as ‘GPIO19’)
+    GPIO.setup(g.pin_sensor1, GPIO.OUT)  # initialize GPIO19 as an output.
+
+    g.EXT2, g.EXT3, g.EXT4 = POS_AIN2 | NEG_AINCOM, POS_AIN3 | NEG_AINCOM, POS_AIN4 | NEG_AINCOM
+    g.EXT5, g.EXT6, g.EXT7 = POS_AIN5 | NEG_AINCOM, POS_AIN6 | NEG_AINCOM, POS_AIN7 | NEG_AINCOM
+
+    g.CH_SEQUENCE = (g.EXT2, g.EXT3, g.EXT4, g.EXT5, g.EXT6, g.EXT7)
+
+    g.p = GPIO.PWM(g.pin_sensor1, 50)  # GPIO as PWM output, with 100Hz frequency
+    g.p.start(0)
 
 
 @app.route('/setting_data', methods=['GET', 'POST'])
@@ -104,6 +145,21 @@ class RegistrationForm(wtforms.Form):
     pumplocation2 = wtforms.StringField('Pump Location 2', [wtforms.validators.Length(min=0, max=3)])
 
 
+class Wheel:
+    def read_sensor(self, sensor_location):
+        raw_channels = ads.read_sequence(sensor_location)
+        voltages = [i * ads.v_per_digit for i in raw_channels]
+        print(voltages)
+        return voltages
+
+    def control_valve(self, pwm, dutyratio):
+        pwm.ChangeDutyCycle(dutyratio)             # change duty cycle for varying the brightness of LED.
+
+    def control_pump(self, pwm, dutyratio):
+        pwm.ChangeDutyCycle(dutyratio)             # change duty cycle for varying the brightness of LED.
+        print("pump")
+
+
 class SaveConstants:
     def saveconfig(self, data):
         with open('data.txt', 'w') as outfile:
@@ -118,4 +174,8 @@ class SaveConstants:
 
 
 if __name__ == '__main__':
+    save = SaveConstants()
+    ads = ADS1256()
+    ads.cal_self()
+    wheels = Wheel()
     app.run(debug=True, port=80, host='0.0.0.0')

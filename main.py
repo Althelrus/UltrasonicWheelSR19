@@ -71,10 +71,10 @@ def set_contants():
 
 
 def set_pins():  # sets all of the pins based off the config
-    IO.setwarnings(False)  # do not show any warnings
-    IO.setmode(IO.BCM)  # we are programming the GPIO by BCM pin numbers. (PIN35 as ‘GPIO19’)
-    IO.setup(37, IO.OUT)  # initialize GPIO19 as an output.
     pin_sensor1 = 37
+    GPIO.setwarnings(False)  # do not show any warnings
+    GPIO.setmode(GPIO.BOARD)  # we are programming the GPIO by BCM pin numbers. (PIN35 as ‘GPIO19’)
+    GPIO.setup(pin_sensor1, GPIO.OUT)  # initialize GPIO19 as an output.
 
     EXT2, EXT3, EXT4 = POS_AIN2 | NEG_AINCOM, POS_AIN3 | NEG_AINCOM, POS_AIN4 | NEG_AINCOM
     EXT5, EXT6, EXT7 = POS_AIN5 | NEG_AINCOM, POS_AIN6 | NEG_AINCOM, POS_AIN7 | NEG_AINCOM
