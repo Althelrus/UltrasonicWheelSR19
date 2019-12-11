@@ -1,3 +1,5 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 # https://towardsdatascience.com/python-webserver-with-flask-and-raspberry-pi-398423cc6f5d
 # http://pwp.stevecassidy.net/bottle/forms-processing.html
 
@@ -13,8 +15,18 @@ import RPi.GPIO as GPIO
 app = Flask(__name__, template_folder='html')
 
 
+@app.before_first_request
+def start_up():
+    print("## First ###")
+    save = SaveConstants()
+    g.loaded_data = save.loadconfig()
+    g.upper_threshold = 3.4
+    g.lower_threshold = 3.6
+
+
 @app.before_request
 def before_request():
+    print("Before")
     g.request_start_time = time.time()
     g.request_time = lambda: "%.5fs" % (time.time() - g.request_start_time)
     g.data_pumpIn = lambda: "%.2fV" % 12
@@ -45,50 +57,34 @@ def graph():
 
 @app.route('/live-data')
 def live_data():
+    print("/live-data")
     # Create a PHP array and echo it as JSON
-    data = [time.time() * 1000, random() * 100]
+    wheels = Wheel()
+    volts = wheels.read_sensor()
+    data = [time.time() * 1000, volts[1]]
     response = make_response(json.dumps(data))
     response.content_type = 'application/json'
-    print(response)
     return response
 
 
-@app.route('/get_sensor_data')
-def get_sensor_data():
-    volts = wheels.read_sensor(g.CH_SEQUENCE)
+@app.route('/control_motor')
+def control_motor():
+    print("/control_motor")
+    wheels = Wheel()
+    volts = wheels.read_sensor()
     if -1 <= volts[1] < 0.5:
-        wheels.control_pump(g.p, 100)
+        wheels.start_pin(36, 100)
         print("One")
     elif 0.5 <= volts[1] < 1:
-        wheels.control_pump(g.p, 66)
+        wheels.start_pin(36, 66)
         print("Two")
     elif 1 <= volts[1] < 2:
-        wheels.control_pump(g.p, 33)
+        wheels.start_pin(36, 33)
         print("Three")
     elif 2 <= volts[1]:
-        wheels.control_pump(g.p, 0)
+        wheels.start_pin(36, 0)
         print("Four")
-    return "get_sensor_data"
-
-
-def set_contants():
-    g.upper_threshold = 3.4
-    g.lower_threshold = 3.6
-
-
-def set_pins():
-    g.pin_sensor1 = 37
-    GPIO.setwarnings(False)  # do not show any warnings
-    GPIO.setmode(GPIO.BOARD)  # we are programming the GPIO by BCM pin numbers. (PIN35 as ‘GPIO19’)
-    GPIO.setup(g.pin_sensor1, GPIO.OUT)  # initialize GPIO19 as an output.
-
-    g.EXT2, g.EXT3, g.EXT4 = POS_AIN2 | NEG_AINCOM, POS_AIN3 | NEG_AINCOM, POS_AIN4 | NEG_AINCOM
-    g.EXT5, g.EXT6, g.EXT7 = POS_AIN5 | NEG_AINCOM, POS_AIN6 | NEG_AINCOM, POS_AIN7 | NEG_AINCOM
-
-    g.CH_SEQUENCE = (g.EXT2, g.EXT3, g.EXT4, g.EXT5, g.EXT6, g.EXT7)
-
-    g.p = GPIO.PWM(g.pin_sensor1, 50)  # GPIO as PWM output, with 100Hz frequency
-    g.p.start(0)
+    return "Done"
 
 
 @app.route('/setting_data', methods=['GET', 'POST'])
@@ -115,8 +111,6 @@ def setting_data():
               form.valvelocation6.data,
               form.pumplocation1.data,
               form.pumplocation2.data]
-    # sc = SaveConstants
-    # sc.saveconfig(g.data)
     print(g.data)
     return render_template('setting.html', form=form)
 
@@ -146,18 +140,31 @@ class RegistrationForm(wtforms.Form):
 
 
 class Wheel:
-    def read_sensor(self, sensor_location):
-        raw_channels = ads.read_sequence(sensor_location)
+    def read_sensor(self):
+        print("Read")
+        ads = ADS1256()
+        ads.cal_self()
+        EXT2, EXT3, EXT4 = POS_AIN2 | NEG_AINCOM, POS_AIN3 | NEG_AINCOM, POS_AIN4 | NEG_AINCOM
+        EXT5, EXT6, EXT7 = POS_AIN5 | NEG_AINCOM, POS_AIN6 | NEG_AINCOM, POS_AIN7 | NEG_AINCOM
+        CH_SEQUENCE = (EXT2, EXT3, EXT4, EXT7)
+        raw_channels = ads.read_sequence(CH_SEQUENCE)
         voltages = [i * ads.v_per_digit for i in raw_channels]
-        print(voltages)
         return voltages
 
-    def control_valve(self, pwm, dutyratio):
-        pwm.ChangeDutyCycle(dutyratio)             # change duty cycle for varying the brightness of LED.
+    def control_valve(self, dutyratio):
+        p.ChangeDutyCycle(dutyratio)  # change duty cycle for varying the brightness of LED.
 
-    def control_pump(self, pwm, dutyratio):
-        pwm.ChangeDutyCycle(dutyratio)             # change duty cycle for varying the brightness of LED.
-        print("pump")
+    def start_pin(self, pin, dutyratio):
+        print("Set PWM Pin")
+        GPIO.setwarnings(False)  # do not show any warnings
+        GPIO.setmode(GPIO.BOARD)  # we are programming the GPIO by BCM pin numbers. (PIN35 as ‘GPIO19’)
+        GPIO.setup(pin, GPIO.OUT)  # initialize GPIO19 as an output.
+        self.p = GPIO.PWM(pin, 100)  # GPIO as PWM output, with 100Hz frequency
+        self.p.start(dutyratio)
+
+    def control_pump(self, dutyratio):
+        print("Control")
+        self.p.ChangeDutyCycle(dutyratio)  # change duty cycle for varying the brightness of LED.
 
 
 class SaveConstants:
@@ -174,8 +181,4 @@ class SaveConstants:
 
 
 if __name__ == '__main__':
-    save = SaveConstants()
-    ads = ADS1256()
-    ads.cal_self()
-    wheels = Wheel()
     app.run(debug=True, port=80, host='0.0.0.0')

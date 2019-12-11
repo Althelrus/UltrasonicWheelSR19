@@ -1,0 +1,9 @@
+{
+    "name": "Rajeev",
+    "age": 25,
+    "address": {
+        "city": "Bangalore",
+        "state": "Karnataka",
+        "country": "India"
+    }
+}

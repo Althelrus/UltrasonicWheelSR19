@@ -1,9 +1,20 @@
 var chart, chart1, chart2;
+var control;
 
 /**
  * Request data from the server, add it to the graph and set a timeout
  * to request again
  */
+function control() {
+    $.ajax({
+        url: '/control_motor',
+        success: function() {
+            // call it again after one second
+            setTimeout(control(), 1000);
+        },
+        cache: false
+    });
+}
 function requestData() {
     $.ajax({
         url: '/live-data',
@@ -33,7 +44,7 @@ function requestData2() {
             chart1.series[0].addPoint(point, true, shift);
 
             // call it again after one second
-            setTimeout(requestData, 1000);
+            setTimeout(requestData, 10000);
         },
         cache: false
     });
@@ -57,6 +68,7 @@ function requestData3() {
 }
 
 $(document).ready(function() {
+    control()
     chart = new Highcharts.Chart({
         chart: {
             renderTo: 'data-container',
