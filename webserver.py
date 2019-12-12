@@ -27,6 +27,13 @@ VALVE4 = 26
 VALVE5 = 13
 VALVE6 = 6
 
+w1_act = 1
+w2_act = 0
+w3_act = 0
+w4_act = 0
+w5_act = 0
+w6_act = 0
+
 # speed = pwm duty cycle, 0 = off, 100 = max
 speed = 100
 
@@ -45,9 +52,11 @@ def start_up():
     print("## First ###")
     save = SaveConstants()
     g.loaded_data = save.loadconfig()
-    print(g.loaded_data)
-    g.upper_threshold = 3.4
-    g.lower_threshold = 3.6
+    g.list1 = []
+    for p in g.loaded_data:
+        g.list1.append(p)
+    g.upper_threshold = 3.5 + g.loaded_data["delta"]
+    g.lower_threshold = 3.5 - g.loaded_data["delta"]
 
 
 @app.before_request
@@ -197,8 +206,6 @@ class SaveConstants:
         print("load")
         with open('data.txt') as json_file:
             data = json.load(json_file)
-        for p in data:
-            print(p)
         return data
 
 
