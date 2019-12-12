@@ -5,14 +5,39 @@
 
 import json
 import time, os
-from random import random
 import wtforms
-from flask import Flask, render_template, make_response, request, g, flash, url_for
+from flask import Flask, render_template, make_response, request, g
 from ADS1256_definitions import *
 from pipyadc import ADS1256
-import RPi.GPIO as GPIO
 
 app = Flask(__name__, template_folder='html')
+
+import pigpio
+
+pi = pigpio.pi()  # Connect to local Pi.
+
+#########################
+# Motor PINs
+PUMPIN = 16 # left fwd
+PUMPOUT = 12  # left rev
+VALVE1 = 25  # right fwd
+VALVE2 = 24  # right rev
+VALVE3 = 23
+VALVE4 = 26
+VALVE5 = 13
+VALVE6 = 6
+
+# speed = pwm duty cycle, 0 = off, 100 = max
+speed = 100
+
+pi.set_mode(PUMPIN, pigpio.OUTPUT)
+pi.set_mode(PUMPOUT, pigpio.OUTPUT)
+pi.set_mode(VALVE1, pigpio.OUTPUT)
+pi.set_mode(VALVE2, pigpio.OUTPUT)
+pi.set_mode(VALVE3, pigpio.OUTPUT)
+pi.set_mode(VALVE4, pigpio.OUTPUT)
+pi.set_mode(VALVE5, pigpio.OUTPUT)
+pi.set_mode(VALVE6, pigpio.OUTPUT)
 
 
 @app.before_first_request
@@ -20,6 +45,7 @@ def start_up():
     print("## First ###")
     save = SaveConstants()
     g.loaded_data = save.loadconfig()
+    print(g.loaded_data)
     g.upper_threshold = 3.4
     g.lower_threshold = 3.6
 
@@ -54,10 +80,12 @@ def setting():
 def graph():
     return render_template('index.html')
 
+@app.route('/stop')
+def stop():
+    pi.stop()
 
 @app.route('/live-data')
 def live_data():
-    print("/live-data")
     # Create a PHP array and echo it as JSON
     wheels = Wheel()
     volts = wheels.read_sensor()
@@ -69,20 +97,19 @@ def live_data():
 
 @app.route('/control_motor')
 def control_motor():
-    print("/control_motor")
     wheels = Wheel()
     volts = wheels.read_sensor()
     if -1 <= volts[1] < 0.5:
-        wheels.start_pin(36, 100)
+        pi.set_PWM_dutycycle(PUMPIN, 100)
         print("One")
     elif 0.5 <= volts[1] < 1:
-        wheels.start_pin(36, 66)
+        pi.set_PWM_dutycycle(PUMPIN, 66)
         print("Two")
     elif 1 <= volts[1] < 2:
-        wheels.start_pin(36, 33)
+        pi.set_PWM_dutycycle(PUMPIN, 33)
         print("Three")
     elif 2 <= volts[1]:
-        wheels.start_pin(36, 0)
+        pi.set_PWM_dutycycle(PUMPIN, 0)
         print("Four")
     return "Done"
 
@@ -151,20 +178,13 @@ class Wheel:
         voltages = [i * ads.v_per_digit for i in raw_channels]
         return voltages
 
-    def control_valve(self, dutyratio):
-        p.ChangeDutyCycle(dutyratio)  # change duty cycle for varying the brightness of LED.
+    def control_valve(self, location, dutyratio):
+        pi.set_PWM_dutycycle(location, dutyratio)
 
-    def start_pin(self, pin, dutyratio):
-        print("Set PWM Pin")
-        GPIO.setwarnings(False)  # do not show any warnings
-        GPIO.setmode(GPIO.BOARD)  # we are programming the GPIO by BCM pin numbers. (PIN35 as ‘GPIO19’)
-        GPIO.setup(pin, GPIO.OUT)  # initialize GPIO19 as an output.
-        self.p = GPIO.PWM(pin, 100)  # GPIO as PWM output, with 100Hz frequency
-        self.p.start(dutyratio)
 
-    def control_pump(self, dutyratio):
+    def control_pump(self, location, dutyratio):
         print("Control")
-        self.p.ChangeDutyCycle(dutyratio)  # change duty cycle for varying the brightness of LED.
+        pi.set_PWM_dutycycle(location, dutyratio)
 
 
 class SaveConstants:
@@ -173,6 +193,7 @@ class SaveConstants:
             json.dump(data, outfile, indent=4)
 
     def loadconfig(self):
+        print("load")
         with open('data.txt') as json_file:
             data = json.load(json_file)
         for p in data:
