@@ -1,9 +1,30 @@
 {
-    "name": "Rajeev",
-    "age": 25,
-    "address": {
-        "city": "Bangalore",
-        "state": "Karnataka",
-        "country": "India"
-    }
+    "name": "By Jonathan Ramirez",
+    "delta": 0.3,
+    "active": {
+        "w1_act" 1
+        w2_act : 0
+        w3_act : 0
+        w4_act : 0
+        w5_act : 0
+        w6_act : 0
+    },
+    "pins" : {
+        "PUMPIN" : 16,
+        "PUMPOUT" : 12,
+        "VALVE1" : 25,
+        "VALVE2" : 24,
+        "VALVE3" : 23,
+        "VALVE4" : 26,
+        "VALVE5" : 13,
+        "VALVE6" : 6
+    },
+    "analog" : {
+        "sn1" : "EXT2",
+        "sn2" : "EXT3",
+        "sn3" : "EXT4",
+        "sn4" : "EXT5",
+        "sn5" : "EXT6",
+        "sn6" : "EXT7"
+    },
 }

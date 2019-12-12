@@ -18,7 +18,7 @@ pi = pigpio.pi()  # Connect to local Pi.
 
 #########################
 # Motor PINs
-PUMPIN = 16 # left fwd
+PUMPIN = 16  # left fwd
 PUMPOUT = 12  # left rev
 VALVE1 = 25  # right fwd
 VALVE2 = 24  # right rev
@@ -80,9 +80,11 @@ def setting():
 def graph():
     return render_template('index.html')
 
+
 @app.route('/stop')
 def stop():
     pi.stop()
+
 
 @app.route('/live-data')
 def live_data():
@@ -180,7 +182,6 @@ class Wheel:
 
     def control_valve(self, location, dutyratio):
         pi.set_PWM_dutycycle(location, dutyratio)
-
 
     def control_pump(self, location, dutyratio):
         print("Control")
