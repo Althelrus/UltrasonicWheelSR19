@@ -18,6 +18,10 @@ import pigpio
 
 pi = pigpio.pi()  # Connect to local Pi.
 
+
+#########################
+# todo automate amount of graphs that display on site
+# todo make refresh every 30 mins
 #########################
 # Motor PINs
 PUMPIN = 16
@@ -30,12 +34,8 @@ VALVE4 = 26
 VALVE5 = 13
 VALVE6 = 6
 
-w1_act = 1
-w2_act = 0
-w3_act = 0
-w4_act = 0
-w5_act = 0
-w6_act = 0
+
+
 
 # speed = pwm duty cycle, 0 = off, 100 = max
 speed = 100
@@ -51,7 +51,9 @@ pi.set_mode(VALVE6, pigpio.OUTPUT)
 
 
 # todo fix load
+    # todo try loading
 # todo try catch
+    # todo still have the default values in the catch
 @app.before_first_request
 def start_up():
     print("## First ###")
@@ -60,10 +62,13 @@ def start_up():
     # g.list1 = []
     # for p in g.loaded_data:
     #    g.list1.append(p)
-    # g.delta = 3.5 + g.loaded_data["delta"]
-    g.mode = 1
+    g.delta = .2  # This value is used to find the upper and lower bounds of the ideal todo read from data
+    g.mode = 1  # This value is to tell in what state the wheel is in
+    g.w_act = [1, 0, 0, 0, 0, 0]  # This is the default active wheels todo read from load
 
 
+# This runs before anything on the page to update anything on the page
+# todo fix what we are writing out to the screen
 @app.before_request
 def before_request():
     print("Before")
@@ -71,35 +76,39 @@ def before_request():
     g.request_time = lambda: "%.5fs" % (time.time() - g.request_start_time)
     g.data_pumpIn = lambda: os.getcwd()
     g.data_pumpOut = lambda: "%.2fV" % 13
-    g.data_valveStatus = lambda: "Open"
+    g.data_valveStatus = lambda: "%i" % g.w_act
 
-
+# Home page of the website
 @app.route('/')
 def home():
     return render_template("home.html")
 
-
+# About page of the website
 @app.route('/about')
 def about():
     return render_template("about.html")
 
-
+# Settings page of the website
 @app.route('/setting')
 def setting():
     form = RegistrationForm(request.form)
     return render_template("setting.html", form=form)
 
-
+# Home page of the website
+# todo remove
 @app.route('/graph')
 def graph():
     return render_template('index.html')
 
-
+# Clean up when restarting server, and saving data file
+# todo add final save
 @app.route('/stop')
 def stop():
     pi.stop()
 
-
+# Function called from javascript on the graph in the html
+# gets the volts reading
+# todo route through pressure function
 @app.route('/live-data')
 def live_data():
     # Create a PHP array and echo it as JSON
@@ -111,23 +120,31 @@ def live_data():
     return response
 
 
-# todo reference array
+# todo add threading call
 @app.route('/control_motor')
 def control_motor():
     wheels = Wheel()
     pressure = volts_to_pressure(wheels)
-    if pressure == ideal:
-        print("GOOD:", pressure)
-    elif (pressure - delta) <= ideal:
-        pressure_low(ideal, wheels)  # subproccess
-    elif (pressure + delta) >= ideal:
-        pressure_high(ideal, wheels)  # subproccess
-    else:
-        pass
+    for x in pressure:
+        if pressure[x] == g.ideal:
+            g.data_pumpIn = lambda: "Off"
+            g.data_pumpOut = lambda: "Off"
+        elif (pressure[x] - g.delta) <= g.ideal:
+            g.data_pumpIn = lambda: "On"
+            g.data_pumpOut = lambda: "Off"
+            pressure_low(g.delta, g.ideal, wheels, 3)  # subproccess
+        elif (pressure[x] + g.delta) >= g.ideal:
+            g.data_pumpIn = lambda: "Off"
+            g.data_pumpOut = lambda: "On"
+            pressure_high(g.delta, g.ideal, wheels, 3)  # subproccess
+        else:
+            g.data_pumpIn = lambda: "Hello"
+            g.data_pumpOut = lambda: "World"
 
 
-def pressure_high(delta, ideal, wheels):
-    while (volts_to_pressure(wheels)[3]) >= (ideal - delta - 0.01):
+# This function will continuously remove pressure to the wheel for x of the wheel
+def pressure_high(delta, ideal, wheels, x=3):
+    while (volts_to_pressure(wheels)[x]) >= (ideal - delta - 0.01):
         wheels.control_valve(VALVE_out, 1)
         wheels.control_pump(PUMPOUT, 0)
         time.sleep(.01)
@@ -137,19 +154,36 @@ def pressure_high(delta, ideal, wheels):
     wheels.control_pump(PUMPOUT, 100)
 
 
-def pressure_low(delta, ideal, wheels):
+# This function will continuously add pressure to the wheel for x of the wheel
+def pressure_low(delta, ideal, wheels, x=3):
     wheels.control_valve(VALVE1, 1)
-    while (volts_to_pressure(wheels)[3]) <= (ideal + delta - 0.01):
+    while (volts_to_pressure(wheels)[x]) <= (ideal + delta - 0.01):
         wheels.control_pump(PUMPOUT, 0)
 
     wheels.control_valve(VALVE1, 0)
     wheels.control_pump(PUMPOUT, 100)
 
 
+# Set Ideal Pressure and converts volts to pressure
 def volts_to_pressure(wheels):
     volts = wheels.read_sensor()
+    if g.mode == 1:
+        pressure = list(map(lambda x: x, volts))  # returns static and position up
+        g.ideal = 3.5
+    elif g.mode == 2:
+        pressure = list(map(lambda x: x ** 2, volts))  # returns Down force
+        g.ideal = 3.7
+    elif g.mode == 3:
+        pressure = list(map(lambda x: x ** 2, volts))  # returns moving
+        g.ideal = 2.5
+    else:
+        pressure = list(map(lambda x: x, volts))  # returns volts
+        g.ideal = 3.5
+    return pressure
 
 
+# this is called when someone submits anything in settings
+# todo save data in here
 @app.route('/setting_data', methods=['GET', 'POST'])
 def setting_data():
     form = RegistrationForm(request.form)
@@ -178,6 +212,8 @@ def setting_data():
     return render_template('setting.html', form=form)
 
 
+# This Class makes the Registration Form
+# todo move to separate file
 class RegistrationForm(wtforms.Form):
     delta = wtforms.FloatField('Delta', default="0.3")
     activewheels1 = wtforms.BooleanField('Active Wheels 1')
@@ -202,6 +238,8 @@ class RegistrationForm(wtforms.Form):
     pumplocation2 = wtforms.StringField('Pump Location 2', [wtforms.validators.Length(min=0, max=3)])
 
 
+# This Class Communicates with all of the sensors and pumps
+# todo move to separate file
 class Wheel:
     def read_sensor(self):
         print("Read")
@@ -221,6 +259,8 @@ class Wheel:
         pi.set_PWM_dutycycle(location, dutyratio)
 
 
+# This Saves and loads the config
+# todo move to separate file
 class SaveConstants:
     def saveconfig(self, data):
         with open('/home/pi/Desktop/UltrsonicWheelSR19/data.txt', 'w') as outfile:
@@ -233,5 +273,6 @@ class SaveConstants:
         return data
 
 
+# Starts the Web application on the hostname
 if __name__ == '__main__':
     app.run(debug=True, port=80, host='0.0.0.0')
