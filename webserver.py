@@ -120,6 +120,7 @@ def stop():
     return 'ok'
     #todo
     # pi.stop()
+    # GPIO.cleanup()
 
 # called from webpage -> pressurise the wheel up to 7psi then turn of pumps
 # todo pressurise the wheel up to 7psi then turn of pumps
