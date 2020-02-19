@@ -10,7 +10,17 @@ function control() {
         url: '/control_motor',
         success: function() {
             // call it again after one second
-            setTimeout(control(), 1000);
+            setTimeout(control(), 8000);
+        },
+        cache: false
+    });
+}
+function act_wheels() {
+    $.ajax({
+        url: '/act_wheels',
+        success: function() {
+            // call it again after one second
+            setTimeout(control(), 100000);
         },
         cache: false
     });
@@ -69,91 +79,98 @@ function requestData3() {
 
 $(document).ready(function() {
     control()
-    chart = new Highcharts.Chart({
-        chart: {
-            renderTo: 'data-container',
-            defaultSeriesType: 'spline',
-            events: {
-                load: requestData
-            }
-        },
-        title: {
-            text: 'Live random data'
-        },
-        xAxis: {
-            type: 'datetime',
-            tickPixelInterval: 150,
-            maxZoom: 20 * 1000
-        },
-        yAxis: {
-            minPadding: 0.2,
-            maxPadding: 0.2,
+    act_wheels = act_wheels()
+    if act_wheels[0] = 1{
+        chart = new Highcharts.Chart({
+            chart: {
+                renderTo: 'data-container',
+                defaultSeriesType: 'spline',
+                events: {
+                    load: requestData
+                }
+            },
             title: {
-                text: 'Value',
-                margin: 80
-            }
-        },
-        series: [{
-            name: 'Random data',
-            data: []
-        }]
-    });
-    chart1 = new Highcharts.Chart({
-        chart: {
-            renderTo: 'data-container2',
-            defaultSeriesType: 'spline',
-            events: {
-                load: requestData2
-            }
-        },
-        title: {
-            text: 'Live random data'
-        },
-        xAxis: {
-            type: 'datetime',
-            tickPixelInterval: 150,
-            maxZoom: 20 * 1000
-        },
-        yAxis: {
-            minPadding: 0.2,
-            maxPadding: 0.2,
+                text: 'Pressure"
+            },
+            xAxis: {
+                type: 'datetime',
+                tickPixelInterval: 150,
+                maxZoom: 20 * 1000
+            },
+            yAxis: {
+                minPadding: 0.2,
+                maxPadding: 0.2,
+                title: {
+                    text: 'Value',
+                    margin: 80
+                }
+            },
+            series: [{
+                name: 'Random data',
+                data: []
+            }]
+        });
+    }
+    if act_wheels[1] = 1
+        chart1 = new Highcharts.Chart({
+            chart: {
+                renderTo: 'data-container2',
+                defaultSeriesType: 'spline',
+                events: {
+                    load: requestData2
+                }
+            },
             title: {
-                text: 'Value',
-                margin: 80
-            }
-        },
-        series: [{
-            name: 'Random data',
-            data: []
-        }]
-    });
-    chart2 = new Highcharts.Chart({
-        chart: {
-            renderTo: 'data-container3',
-            defaultSeriesType: 'spline',
-            events: {
-                load: requestData3
-            }
-        },
-        title: {
-            text: 'Live random data'
-        },
-        xAxis: {
-            type: 'datetime',
-            tickPixelInterval: 150,
-            maxZoom: 20 * 1000
-        },
-        yAxis: {
-            minPadding: 0.2,
-            maxPadding: 0.2,
+                text: 'Live random data'
+            },
+            xAxis: {
+                type: 'datetime',
+                tickPixelInterval: 150,
+                maxZoom: 20 * 1000
+            },
+            yAxis: {
+                minPadding: 0.2,
+                maxPadding: 0.2,
+                title: {
+                    text: 'Value',
+                    margin: 80
+                }
+            },
+            series: [{
+                name: 'Random data',
+                data: []
+            }]
+        });
+    }
+    if act_wheels[2] = 1
+        chart2 = new Highcharts.Chart({
+            chart: {
+                renderTo: 'data-container3',
+                defaultSeriesType: 'spline',
+                events: {
+                    load: requestData3
+                }
+            },
             title: {
-                text: 'Value',
-                margin: 80
-            }
-        },
-        series: [{
-            name: 'Random data',
-            data: []
-        }]
-    });
+                text: 'Pressure Reading'
+            },
+            xAxis: {
+                type: 'datetime',
+                tickPixelInterval: 150,
+                maxZoom: 20 * 1000
+            },
+            yAxis: {
+                minPadding: 0.2,
+                maxPadding: 0.2,
+                title: {
+                    text: 'Value',
+                    margin: 80
+                }
+            },
+            series: [{
+                name: 'Random data',
+                data: []
+            }]
+        });
+    }
 });

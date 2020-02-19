@@ -18,8 +18,8 @@ import pigpio
 
 pi = pigpio.pi()  # Connect to local Pi.
 
-
 #########################
+# todo add calls for other wheels and sensors -> model after live_data()
 # todo download any scripts that are from the internet
 # todo automate amount of graphs that display on site
 # todo make refresh every 30 mins
@@ -37,9 +37,6 @@ VALVE4 = 26
 VALVE5 = 13
 VALVE6 = 6
 
-
-
-
 # speed = pwm duty cycle, 0 = off, 100 = max
 speed = 100
 
@@ -54,9 +51,9 @@ pi.set_mode(VALVE6, pigpio.OUTPUT)
 
 
 # todo fix load
-    # todo try loading
+# todo try loading
 # todo try catch
-    # todo still have the default values in the catch
+# todo still have the default values in the catch
 @app.before_first_request
 def start_up():
     print("## First ###")
@@ -78,15 +75,18 @@ def before_request():
     g.request_time = lambda: "% Last Update: .5fs" % (time.time() - g.request_start_time)
     g.data_valveStatus = lambda: "%i" % g.w_act
 
+
 # Home page of the website
 @app.route('/')
 def home():
     return render_template("home.html")
 
+
 # About page of the website
 @app.route('/about')
 def about():
     return render_template("about.html")
+
 
 # Settings page of the website
 @app.route('/setting')
@@ -94,17 +94,29 @@ def setting():
     form = RegistrationForm(request.form)
     return render_template("setting.html", form=form)
 
+
 # Home page of the website
 # todo remove
 @app.route('/graph')
 def graph():
     return render_template('index.html')
 
+
 # Clean up when restarting server, and saving data file
 # todo add final save
 @app.route('/stop')
 def stop():
     pi.stop()
+
+
+# for setting the javascript variable on active wheels called from javascripts
+@app.route('/act_wheels')
+def act_wheels():
+    data = g.w_act
+    response = make_response(json.dumps(data))
+    response.content_type = 'application/json'
+    return response
+
 
 # Function called from javascript on the graph in the html
 # gets the volts reading
@@ -121,6 +133,7 @@ def live_data():
 
 
 # todo add threading call
+# function gets called from javascript
 @app.route('/control_motor')
 def control_motor():
     wheels = Wheel()
