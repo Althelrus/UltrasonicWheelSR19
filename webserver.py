@@ -115,24 +115,27 @@ def graph():
 #todo
 # add final save
 # call reboot script
-@app.route('/stop')
+@app.route('/stop', methods=['POST'])
 def stop():
-    return 'ok'
+    form = RegistrationForm(request.form)
+    return render_template("setting.html", form=form)
     #todo
     # pi.stop()
     # GPIO.cleanup()
 
 # called from webpage -> pressurise the wheel up to 7psi then turn of pumps
 # todo pressurise the wheel up to 7psi then turn of pumps
-@app.route('/Pressurise')
-def Pressurise():
-    return 200
+@app.route('/pressurise', methods=['POST'])
+def pressurise():
+    form = RegistrationForm(request.form)
+    return render_template("setting.html", form=form)
 
 # called from Webpage -> almost drain the entire wheel
 # todo almost drain the entire wheel
-@app.route('/Depressurise')
-def Depressurise():
-    return 200
+@app.route('/depressurise', methods=['POST'])
+def depressurise():
+    form = RegistrationForm(request.form)
+    return render_template("setting.html", form=form)
 
 
 # for setting the javascript variable on active wheels called from javascripts
