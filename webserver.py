@@ -6,18 +6,19 @@
 
 import json
 import os
-import thread
 import time
 import wtforms
 from flask import Flask, render_template, make_response, request, g
-from ADS1256_definitions import *
-from pipyadc import ADS1256
+from flaskthreads import AppContextThread
+#todo
+# from ADS1256_definitions import *
+# from pipyadc import ADS1256
 
 app = Flask(__name__, template_folder='html')
 
-import pigpio
-
-pi = pigpio.pi()  # Connect to local Pi.
+#todo
+# import pigpio
+#pi = pigpio.pi()  # Connect to local Pi.
 
 #########################
 # todo add calls for other wheels and sensors -> model after live_data()
@@ -40,15 +41,15 @@ VALVE6 = 6
 
 # speed = pwm duty cycle, 0 = off, 100 = max
 speed = 100
-
-pi.set_mode(PUMPIN, pigpio.OUTPUT)
-pi.set_mode(PUMPOUT, pigpio.OUTPUT)
-pi.set_mode(VALVE1, pigpio.OUTPUT)
-pi.set_mode(VALVE_out, pigpio.OUTPUT)
-pi.set_mode(VALVE3, pigpio.OUTPUT)
-pi.set_mode(VALVE4, pigpio.OUTPUT)
-pi.set_mode(VALVE5, pigpio.OUTPUT)
-pi.set_mode(VALVE6, pigpio.OUTPUT)
+#todo
+# pi.set_mode(PUMPIN, pigpio.OUTPUT)
+# pi.set_mode(PUMPOUT, pigpio.OUTPUT)
+# pi.set_mode(VALVE1, pigpio.OUTPUT)
+# pi.set_mode(VALVE_out, pigpio.OUTPUT)
+# pi.set_mode(VALVE3, pigpio.OUTPUT)
+# pi.set_mode(VALVE4, pigpio.OUTPUT)
+# pi.set_mode(VALVE5, pigpio.OUTPUT)
+# pi.set_mode(VALVE6, pigpio.OUTPUT)
 
 
 # todo fix load
@@ -64,6 +65,8 @@ def start_up():
     # g.list1 = []
     # for p in g.loaded_data:
     #    g.list1.append(p)
+    g.data_pumpIn = lambda: "Off"
+    g.data_pumpOut = lambda: "Off"
     g.delta = .2  # This value is used to find the upper and lower bounds of the ideal todo read from data
     g.mode = 1  # This value is to tell in what state the wheel is in
     g.w_act = [1, 0, 0, 0, 0, 0]  # This is the default active wheels todo read from load
@@ -75,7 +78,7 @@ def start_up():
 def before_request():
     g.request_start_time = time.time()
     g.request_time = lambda: "%.5fs" % (time.time() - g.request_start_time)
-    g.data_valveStatus = lambda: "%i" % g.w_act
+    g.data_valveStatus = lambda: ' '.join(map(str, g.w_act))
 
 
 # Home page of the website
@@ -108,7 +111,9 @@ def graph():
 # todo add final save
 @app.route('/stop')
 def stop():
-    pi.stop()
+    return 'ok'
+    #todo
+    # pi.stop()
 
 
 # for setting the javascript variable on active wheels called from javascripts
@@ -138,8 +143,8 @@ def live_data():
 # function gets called from javascript
 @app.route('/control_motor')
 def control_motor():
-    wheels = Wheel()
-    pressure = volts_to_pressure(wheels)
+    g.wheels = Wheel()
+    pressure = volts_to_pressure(g.wheels)
     for x in pressure:
         if pressure[x] == g.ideal:
             g.data_pumpIn = lambda: "Off"
@@ -147,38 +152,45 @@ def control_motor():
         elif (pressure[x] - g.delta) <= g.ideal:
             g.data_pumpIn = lambda: "On"
             g.data_pumpOut = lambda: "Off"
-            thread.start_new_thread(pressure_low, (g.delta, g.ideal, wheels, 3))
-            # pressure_low(g.delta, g.ideal, wheels, 3)  # subprocess
+            g.gx = x
+            t = AppContextThread(target=pressure_low)
+            t.start()
+            t.join()
         elif (pressure[x] + g.delta) >= g.ideal:
             g.data_pumpIn = lambda: "Off"
             g.data_pumpOut = lambda: "On"
-            thread.start_new_thread(pressure_high, (g.delta, g.ideal, wheels, 3))
-            # pressure_high(g.delta, g.ideal, wheels, 3)  # subprocess
+            t = AppContextThread(target=pressure_high)
+            t.start()
+            t.join()
         else:
             g.data_pumpIn = lambda: "Hello"
             g.data_pumpOut = lambda: "World"
-
+    return 'ok'
 
 # This function will continuously remove pressure to the wheel for x of the wheel
-def pressure_high(delta, ideal, wheels, x):
-    while (volts_to_pressure(wheels)[x]) >= (ideal - delta - 0.01):
-        wheels.control_valve(VALVE_out, 1)
-        wheels.control_pump(PUMPOUT, 0)
+#todo
+# add ablity to have the pumps vary in speed
+def pressure_high():
+    while (volts_to_pressure(g.wheels)[g.gx]) >= (g.ideal - g.delta - 0.05):
+        g.wheels.control_valve(VALVE_out, 1)
+        g.wheels.control_pump(PUMPOUT, 0)
         time.sleep(.01)
-        wheels.control_valve(VALVE_out, 1)
+        g.wheels.control_valve(VALVE_out, 1)
 
-    wheels.control_valve(VALVE_out, 0)
-    wheels.control_pump(PUMPOUT, 100)
+    g.wheels.control_valve(VALVE_out, 0)
+    g.wheels.control_pump(PUMPOUT, 100)
 
 
 # This function will continuously add pressure to the wheel for x of the wheel
-def pressure_low(delta, ideal, wheels, x):
-    wheels.control_valve(VALVE1, 1)
-    while (volts_to_pressure(wheels)[x]) <= (ideal + delta - 0.01):
-        wheels.control_pump(PUMPOUT, 0)
+#todo
+# add ablity to have the pumps vary in speed
+def pressure_low():
+    g.wheels.control_valve(VALVE1, 1)
+    while (volts_to_pressure(g.wheels)[g.gx]) <= (g.ideal + g.delta - 0.05):
+        g.wheels.control_pump(PUMPOUT, 0)
 
-    wheels.control_valve(VALVE1, 0)
-    wheels.control_pump(PUMPOUT, 100)
+    g.wheels.control_valve(VALVE1, 0)
+    g.wheels.control_pump(PUMPOUT, 100)
 
 
 # Set Ideal Pressure and converts volts to pressure
