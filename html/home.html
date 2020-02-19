@@ -12,13 +12,12 @@
 
 <body>
 	<header>
-		<div id="logo"><img src="/logo.png">Train&nbsp;Sensor</div>
+		<div id="logo"><img src="{{url_for('static',filename='images/nordco-logo.png')}}">Train&nbsp;Sensor</div>
 		<nav>
 			<ul>
 				<li><a href="{{url_for('home')}}">Dashboard</a>
 				<li><a href="{{url_for('setting')}}">Settings</a>
 				<li><a href="{{url_for('about')}}">About</a>
-                <li><a href="{{url_for('graph')}}">Graph</a>
 			</ul>
 		</nav>
 	</header>
@@ -37,8 +36,8 @@
 			</article>
 			<article>
 				<h2>Wheel Valve Status</h2>
-				<p>Wheel 1 2 3 4 5 6 </p>
-				<p>Index: {{ g.data_valveStatus() }}</p>
+				<p>Wheel&nbsp;1 2 3 4 5 6 </p>
+				<p>Index&nbsp;{{ g.data_valveStatus() }}</p>
 			</article>
 			<article>
 				<h2></h2>
@@ -54,7 +53,7 @@
                     </div>
                 </div>
             </div>
-			<div>SSensor 2 Pressure
+			<div>Sensor 2 Pressure
                 <div class="container-fluid">
                   <!-- Example row of columns -->
                   <div class="row">

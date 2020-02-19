@@ -12,13 +12,12 @@
 
 <body>
 	<header>
-		<div id="logo"><img src="/logo.png">Train&nbsp;Sensor</div>
+		<div id="logo"><img src="{{url_for('static',filename='images/nordco-logo.png')}}">Train&nbsp;Sensor</div>
 		<nav>
 			<ul>
 				<li><a href="{{url_for('home')}}">Dashboard</a>
 				<li><a href="{{url_for('setting')}}">Settings</a>
 				<li><a href="{{url_for('about')}}">About</a>
-                <li><a href="{{url_for('graph')}}">Graph</a>
 			</ul>
 		</nav>
 	</header>
@@ -38,7 +37,7 @@
 		</main>
         <aside>
             <div>Team
-                <div class="container-fluid"></div>
+                <div class="container-fluid"><div id="logo"><img src="{{url_for('static',filename='images/nordco-logo.png')}}"></div></div>
                   <!-- Example row of columns -->
                 </div>
             </div>

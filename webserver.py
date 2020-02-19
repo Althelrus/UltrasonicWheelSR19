@@ -29,6 +29,7 @@ app = Flask(__name__, template_folder='html')
 # todo -> make sure to lead users to reload page after a loading screen gif
 #########################
 # Motor PINs
+# todo -> have the pins setup in the class on init to pass in pin locations
 PUMPIN = 16
 PUMPOUT = 12
 VALVE1 = 25
@@ -79,6 +80,9 @@ def before_request():
     g.request_start_time = time.time()
     g.request_time = lambda: "%.5fs" % (time.time() - g.request_start_time)
     g.data_valveStatus = lambda: ' '.join(map(str, g.w_act))
+    g.data_pumpIn = lambda: "Off" # todo test
+    g.data_pumpOut = lambda: "Off" #todo test
+    g.w_act = [1, 0, 0, 0, 0, 0]  # This is the default active wheels todo test
 
 
 # Home page of the website
@@ -114,6 +118,18 @@ def stop():
     return 'ok'
     #todo
     # pi.stop()
+
+# called from webpage -> pressurise the wheel up to 7psi then turn of pumps
+# todo pressurise the wheel up to 7psi then turn of pumps
+@app.route('/Pressurise')
+def Pressurise():
+    return 'ok'
+
+# called from Webpage -> almost drain the entire wheel
+# todo almost drain the entire wheel
+@app.route('/Depressurise')
+def Depressurise():
+    return 'ok'
 
 
 # for setting the javascript variable on active wheels called from javascripts
@@ -223,12 +239,6 @@ def setting_data():
               form.activewheels4.data,
               form.activewheels5.data,
               form.activewheels6.data,
-              form.sensorlocation1.data,
-              form.sensorlocation2.data,
-              form.sensorlocation3.data,
-              form.sensorlocation4.data,
-              form.sensorlocation5.data,
-              form.sensorlocation6.data,
               form.valvelocation1.data,
               form.valvelocation2.data,
               form.valvelocation3.data,
@@ -245,26 +255,20 @@ def setting_data():
 # todo move to separate file
 class RegistrationForm(wtforms.Form):
     delta = wtforms.FloatField('Delta', default="0.3")
-    activewheels1 = wtforms.BooleanField('Active Wheels 1')
+    activewheels1 = wtforms.BooleanField('Active Wheels 1', default=True)
     activewheels2 = wtforms.BooleanField('Active Wheels 2')
     activewheels3 = wtforms.BooleanField('Active Wheels 3')
     activewheels4 = wtforms.BooleanField('Active Wheels 4')
     activewheels5 = wtforms.BooleanField('Active Wheels 5')
     activewheels6 = wtforms.BooleanField('Active Wheels 6')
-    sensorlocation1 = wtforms.StringField('Sensor Location 1', [wtforms.validators.Length(min=0, max=3)])
-    sensorlocation2 = wtforms.StringField('Sensor Location 2', [wtforms.validators.Length(min=0, max=3)])
-    sensorlocation3 = wtforms.StringField('Sensor Location 3', [wtforms.validators.Length(min=0, max=3)])
-    sensorlocation4 = wtforms.StringField('Sensor Location 4', [wtforms.validators.Length(min=0, max=3)])
-    sensorlocation5 = wtforms.StringField('Sensor Location 5', [wtforms.validators.Length(min=0, max=3)])
-    sensorlocation6 = wtforms.StringField('Sensor Location 6', [wtforms.validators.Length(min=0, max=3)])
-    valvelocation1 = wtforms.StringField('Valve Location 1', [wtforms.validators.Length(min=0, max=3)])
-    valvelocation2 = wtforms.StringField('Valve Location 2', [wtforms.validators.Length(min=0, max=3)])
-    valvelocation3 = wtforms.StringField('Valve Location 3', [wtforms.validators.Length(min=0, max=3)])
-    valvelocation4 = wtforms.StringField('Valve Location 4', [wtforms.validators.Length(min=0, max=3)])
-    valvelocation5 = wtforms.StringField('Valve Location 5', [wtforms.validators.Length(min=0, max=3)])
-    valvelocation6 = wtforms.StringField('Valve Location 6', [wtforms.validators.Length(min=0, max=3)])
-    pumplocation1 = wtforms.StringField('Pump Location 1', [wtforms.validators.Length(min=0, max=3)])
-    pumplocation2 = wtforms.StringField('Pump Location 2', [wtforms.validators.Length(min=0, max=3)])
+    valvelocation1 = wtforms.StringField('Valve Location 1', [wtforms.validators.Length(min=0, max=3)], default="25")
+    valvelocation2 = wtforms.StringField('Valve Location 2', [wtforms.validators.Length(min=0, max=3)], default="33")
+    valvelocation3 = wtforms.StringField('Valve Location 3', [wtforms.validators.Length(min=0, max=3)], default="23")
+    valvelocation4 = wtforms.StringField('Valve Location 4', [wtforms.validators.Length(min=0, max=3)], default="24")
+    valvelocation5 = wtforms.StringField('Valve Location 5', [wtforms.validators.Length(min=0, max=3)], default="13")
+    valvelocation6 = wtforms.StringField('Valve Out Location', [wtforms.validators.Length(min=0, max=3)], default="24")
+    pumplocation1 = wtforms.StringField('Pump In Location 1', [wtforms.validators.Length(min=0, max=3)], default="16")
+    pumplocation2 = wtforms.StringField('Pump Out Location 2', [wtforms.validators.Length(min=0, max=3)], default="12")
 
 
 # This Class Communicates with all of the sensors and pumps

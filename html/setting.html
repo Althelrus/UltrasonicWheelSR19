@@ -12,13 +12,12 @@
 
 <body>
 	<header>
-		<div id="logo"><img src="/logo.png">Train&nbsp;Sensor</div>
+		<div id="logo"><img src="{{url_for('static',filename='images/nordco-logo.png')}}">Train&nbsp;Sensor</div>
 		<nav>
 			<ul>
 				<li><a href="{{url_for('home')}}">Dashboard</a>
 				<li><a href="{{url_for('setting')}}">Settings</a>
 				<li><a href="{{url_for('about')}}">About</a>
-                <li><a href="{{url_for('graph')}}">Graph</a>
 			</ul>
 		</nav>
 	</header>
@@ -40,13 +39,6 @@
                           {{ render_field(form.activewheels4) }}
                           {{ render_field(form.activewheels5) }}
                           {{ render_field(form.activewheels6) }}
-                          <div class="element-separator"><hr><h3 class="section-break-title">Sensor Location on PLC</h3></div>
-                          {{ render_field(form.sensorlocation1) }}
-                          {{ render_field(form.sensorlocation2) }}
-                          {{ render_field(form.sensorlocation3) }}
-                          {{ render_field(form.sensorlocation4) }}
-                          {{ render_field(form.sensorlocation5) }}
-                          {{ render_field(form.sensorlocation6) }}
                           <div class="element-separator"><hr><h3 class="section-break-title">Valve Location on PLC</h3></div>
                           {{ render_field(form.valvelocation1) }}
                           {{ render_field(form.valvelocation2) }}
@@ -67,10 +59,15 @@
 		</aside>
 	<section id="pageContent">
 		<main role="main">
+            <div class="element-separator"><hr><h3 class="section-break-title">Controls</h3></div>
+            <p>REBOOT PI        <form action="{{ url_for('stop') }}" method=post><p><input type=submit value=Submit></form></p>
+            <p>Pressurise PI    <form action="{{ url_for('Pressurise') }}" method=post><p><input type=submit value=Submit></form></p>
+            <p>Depressurise PI  <form action="{{ url_for('Depressurise') }}" method=post><p><input type=submit value=Submit></form></p>
             <div class="element-separator"><hr><h3 class="section-break-title">How to Use</h3></div>
-            <div class="element-separator"><hr><h3 class="section-break-title">Pump Location on PLC</h3></div>
-            <div class="element-separator"><hr><h3 class="section-break-title">Valve Location on PLC</h3></div>
+            <div class="element-separator"><hr><h3 class="section-break-title">Sensor Locations Ensure These are Correct : Todo Remove with plug for analog sensors</h3></div>
+            <div class="element-separator"><hr><h3 class="section-break-title"></h3></div>
 		</main>
+
 	</section>
 	<footer>
 		<p>&copy; By Train Sensor Group</p>
