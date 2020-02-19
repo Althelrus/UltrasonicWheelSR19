@@ -6,6 +6,7 @@
 
 import json
 import os
+import thread
 import time
 import wtforms
 from flask import Flask, render_template, make_response, request, g
@@ -146,18 +147,20 @@ def control_motor():
         elif (pressure[x] - g.delta) <= g.ideal:
             g.data_pumpIn = lambda: "On"
             g.data_pumpOut = lambda: "Off"
-            pressure_low(g.delta, g.ideal, wheels, 3)  # subproccess
+            thread.start_new_thread(pressure_low, (g.delta, g.ideal, wheels, 3))
+            # pressure_low(g.delta, g.ideal, wheels, 3)  # subprocess
         elif (pressure[x] + g.delta) >= g.ideal:
             g.data_pumpIn = lambda: "Off"
             g.data_pumpOut = lambda: "On"
-            pressure_high(g.delta, g.ideal, wheels, 3)  # subproccess
+            thread.start_new_thread(pressure_high, (g.delta, g.ideal, wheels, 3))
+            # pressure_high(g.delta, g.ideal, wheels, 3)  # subprocess
         else:
             g.data_pumpIn = lambda: "Hello"
             g.data_pumpOut = lambda: "World"
 
 
 # This function will continuously remove pressure to the wheel for x of the wheel
-def pressure_high(delta, ideal, wheels, x=3):
+def pressure_high(delta, ideal, wheels, x):
     while (volts_to_pressure(wheels)[x]) >= (ideal - delta - 0.01):
         wheels.control_valve(VALVE_out, 1)
         wheels.control_pump(PUMPOUT, 0)
@@ -169,7 +172,7 @@ def pressure_high(delta, ideal, wheels, x=3):
 
 
 # This function will continuously add pressure to the wheel for x of the wheel
-def pressure_low(delta, ideal, wheels, x=3):
+def pressure_low(delta, ideal, wheels, x):
     wheels.control_valve(VALVE1, 1)
     while (volts_to_pressure(wheels)[x]) <= (ideal + delta - 0.01):
         wheels.control_pump(PUMPOUT, 0)
