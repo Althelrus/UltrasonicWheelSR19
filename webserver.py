@@ -20,8 +20,11 @@ pi = pigpio.pi()  # Connect to local Pi.
 
 
 #########################
+# todo download any scripts that are from the internet
 # todo automate amount of graphs that display on site
 # todo make refresh every 30 mins
+# todo add button in settings page to update program from git repo -> will call batch script ass a subprocess
+# todo -> make sure to lead users to reload page after a loading screen gif
 #########################
 # Motor PINs
 PUMPIN = 16
@@ -71,11 +74,8 @@ def start_up():
 # todo fix what we are writing out to the screen
 @app.before_request
 def before_request():
-    print("Before")
     g.request_start_time = time.time()
-    g.request_time = lambda: "%.5fs" % (time.time() - g.request_start_time)
-    g.data_pumpIn = lambda: os.getcwd()
-    g.data_pumpOut = lambda: "%.2fV" % 13
+    g.request_time = lambda: "% Last Update: .5fs" % (time.time() - g.request_start_time)
     g.data_valveStatus = lambda: "%i" % g.w_act
 
 # Home page of the website
