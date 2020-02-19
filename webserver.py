@@ -80,8 +80,8 @@ def before_request():
     g.request_start_time = time.time()
     g.request_time = lambda: "%.5fs" % (time.time() - g.request_start_time)
     g.data_valveStatus = lambda: ' '.join(map(str, g.w_act))
-    g.data_pumpIn = lambda: "Off" # todo test
-    g.data_pumpOut = lambda: "Off" #todo test
+    g.data_pumpIn = lambda: "Off"   # todo test
+    g.data_pumpOut = lambda: "Off"  # todo test
     g.w_act = [1, 0, 0, 0, 0, 0]  # This is the default active wheels todo test
 
 
@@ -126,13 +126,13 @@ def stop():
 # todo pressurise the wheel up to 7psi then turn of pumps
 @app.route('/Pressurise')
 def Pressurise():
-    return 'ok'
+    return 200
 
 # called from Webpage -> almost drain the entire wheel
 # todo almost drain the entire wheel
 @app.route('/Depressurise')
 def Depressurise():
-    return 'ok'
+    return 200
 
 
 # for setting the javascript variable on active wheels called from javascripts
