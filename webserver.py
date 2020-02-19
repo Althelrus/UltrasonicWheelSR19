@@ -51,9 +51,10 @@ pi.set_mode(VALVE6, pigpio.OUTPUT)
 
 
 # todo fix load
-# todo try loading
-# todo try catch
-# todo still have the default values in the catch
+# ->todo try loading
+#   ->todo parse loading data
+# ->todo try catch
+#   ->todo still have the default values in the catch
 @app.before_first_request
 def start_up():
     print("## First ###")
