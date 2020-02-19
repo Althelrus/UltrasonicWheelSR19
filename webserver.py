@@ -2,9 +2,11 @@
 # -*- coding: utf-8 -*-
 # https://towardsdatascience.com/python-webserver-with-flask-and-raspberry-pi-398423cc6f5d
 # http://pwp.stevecassidy.net/bottle/forms-processing.html
+# http://abyz.me.uk/rpi/pigpio/python.html
 
 import json
-import time, os
+import os
+import time
 import wtforms
 from flask import Flask, render_template, make_response, request, g
 from ADS1256_definitions import *
@@ -18,10 +20,11 @@ pi = pigpio.pi()  # Connect to local Pi.
 
 #########################
 # Motor PINs
-PUMPIN = 16  # left fwd
-PUMPOUT = 12  # left rev
-VALVE1 = 25  # right fwd
-VALVE2 = 24  # right rev
+PUMPIN = 16
+PUMPOUT = 12
+VALVE1 = 25
+VALVE_out = 24
+VALVE2 = 33
 VALVE3 = 23
 VALVE4 = 26
 VALVE5 = 13
@@ -40,23 +43,25 @@ speed = 100
 pi.set_mode(PUMPIN, pigpio.OUTPUT)
 pi.set_mode(PUMPOUT, pigpio.OUTPUT)
 pi.set_mode(VALVE1, pigpio.OUTPUT)
-pi.set_mode(VALVE2, pigpio.OUTPUT)
+pi.set_mode(VALVE_out, pigpio.OUTPUT)
 pi.set_mode(VALVE3, pigpio.OUTPUT)
 pi.set_mode(VALVE4, pigpio.OUTPUT)
 pi.set_mode(VALVE5, pigpio.OUTPUT)
 pi.set_mode(VALVE6, pigpio.OUTPUT)
 
 
+# todo fix load
+# todo try catch
 @app.before_first_request
 def start_up():
     print("## First ###")
-    save = SaveConstants()
-    g.loaded_data = save.loadconfig()
-    g.list1 = []
-    for p in g.loaded_data:
-        g.list1.append(p)
-    g.upper_threshold = 3.5 + g.loaded_data["delta"]
-    g.lower_threshold = 3.5 - g.loaded_data["delta"]
+    # save = SaveConstants()
+    # g.loaded_data = save.loadconfig()
+    # g.list1 = []
+    # for p in g.loaded_data:
+    #    g.list1.append(p)
+    # g.delta = 3.5 + g.loaded_data["delta"]
+    g.mode = 1
 
 
 @app.before_request
@@ -64,7 +69,7 @@ def before_request():
     print("Before")
     g.request_start_time = time.time()
     g.request_time = lambda: "%.5fs" % (time.time() - g.request_start_time)
-    g.data_pumpIn = lambda: "%.2fV" % 12
+    g.data_pumpIn = lambda: os.getcwd()
     g.data_pumpOut = lambda: "%.2fV" % 13
     g.data_valveStatus = lambda: "Open"
 
@@ -106,23 +111,43 @@ def live_data():
     return response
 
 
+# todo reference array
 @app.route('/control_motor')
 def control_motor():
     wheels = Wheel()
+    pressure = volts_to_pressure(wheels)
+    if pressure == ideal:
+        print("GOOD:", pressure)
+    elif (pressure - delta) <= ideal:
+        pressure_low(ideal, wheels)  # subproccess
+    elif (pressure + delta) >= ideal:
+        pressure_high(ideal, wheels)  # subproccess
+    else:
+        pass
+
+
+def pressure_high(delta, ideal, wheels):
+    while (volts_to_pressure(wheels)[3]) >= (ideal - delta - 0.01):
+        wheels.control_valve(VALVE_out, 1)
+        wheels.control_pump(PUMPOUT, 0)
+        time.sleep(.01)
+        wheels.control_valve(VALVE_out, 1)
+
+    wheels.control_valve(VALVE_out, 0)
+    wheels.control_pump(PUMPOUT, 100)
+
+
+def pressure_low(delta, ideal, wheels):
+    wheels.control_valve(VALVE1, 1)
+    while (volts_to_pressure(wheels)[3]) <= (ideal + delta - 0.01):
+        wheels.control_pump(PUMPOUT, 0)
+
+    wheels.control_valve(VALVE1, 0)
+    wheels.control_pump(PUMPOUT, 100)
+
+
+def volts_to_pressure(wheels):
     volts = wheels.read_sensor()
-    if -1 <= volts[1] < 0.5:
-        pi.set_PWM_dutycycle(PUMPIN, 100)
-        print("One")
-    elif 0.5 <= volts[1] < 1:
-        pi.set_PWM_dutycycle(PUMPIN, 66)
-        print("Two")
-    elif 1 <= volts[1] < 2:
-        pi.set_PWM_dutycycle(PUMPIN, 33)
-        print("Three")
-    elif 2 <= volts[1]:
-        pi.set_PWM_dutycycle(PUMPIN, 0)
-        print("Four")
-    return "Done"
 
 
 @app.route('/setting_data', methods=['GET', 'POST'])
@@ -189,22 +214,21 @@ class Wheel:
         voltages = [i * ads.v_per_digit for i in raw_channels]
         return voltages
 
-    def control_valve(self, location, dutyratio):
-        pi.set_PWM_dutycycle(location, dutyratio)
+    def control_valve(self, location, value):
+        pi.write(location, value)
 
     def control_pump(self, location, dutyratio):
-        print("Control")
         pi.set_PWM_dutycycle(location, dutyratio)
 
 
 class SaveConstants:
     def saveconfig(self, data):
-        with open('data.txt', 'w') as outfile:
+        with open('/home/pi/Desktop/UltrsonicWheelSR19/data.txt', 'w') as outfile:
             json.dump(data, outfile, indent=4)
 
     def loadconfig(self):
         print("load")
-        with open('data.txt') as json_file:
+        with open('/home/pi/Desktop/UltrsonicWheelSR19/data.txt') as json_file:
             data = json.load(json_file)
         return data
 
