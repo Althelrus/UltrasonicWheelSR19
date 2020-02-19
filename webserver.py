@@ -112,7 +112,9 @@ def graph():
 
 
 # Clean up when restarting server, and saving data file
-# todo add final save
+#todo
+# add final save
+# call reboot script
 @app.route('/stop')
 def stop():
     return 'ok'
