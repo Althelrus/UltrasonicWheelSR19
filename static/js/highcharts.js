@@ -1,5 +1,6 @@
 var chart, chart1, chart2;
 var control;
+var act_wheels;
 
 /**
  * Request data from the server, add it to the graph and set a timeout
@@ -111,7 +112,7 @@ $(document).ready(function() {
             }]
         });
     }
-    if act_wheels[1] = 1
+    if act_wheels[1] = 1{
         chart1 = new Highcharts.Chart({
             chart: {
                 renderTo: 'data-container2',
@@ -142,7 +143,7 @@ $(document).ready(function() {
             }]
         });
     }
-    if act_wheels[2] = 1
+    if act_wheels[2] = 1{
         chart2 = new Highcharts.Chart({
             chart: {
                 renderTo: 'data-container3',
