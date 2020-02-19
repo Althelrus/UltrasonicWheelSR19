@@ -72,7 +72,7 @@ def start_up():
 @app.before_request
 def before_request():
     g.request_start_time = time.time()
-    g.request_time = lambda: "% Last Update: .5fs" % (time.time() - g.request_start_time)
+    g.request_time = lambda: "%.5fs" % (time.time() - g.request_start_time)
     g.data_valveStatus = lambda: "%i" % g.w_act
 
 
