@@ -95,7 +95,7 @@ def setting():
     return render_template("setting.html", form=form)
 
 
-# Home page of the website
+# Test page of the website
 # todo remove
 @app.route('/graph')
 def graph():
