@@ -11,14 +11,14 @@ import wtforms
 from flask import Flask, render_template, make_response, request, g
 from flaskthreads import AppContextThread
 #todo
-# from ADS1256_definitions import *
-# from pipyadc import ADS1256
+from ADS1256_definitions import *
+from pipyadc import ADS1256
 
 app = Flask(__name__, template_folder='html')
 
 #todo
-# import pigpio
-#pi = pigpio.pi()  # Connect to local Pi.
+import pigpio
+pi = pigpio.pi()  # Connect to local Pi.
 
 #########################
 # todo add calls for other wheels and sensors -> model after live_data()
@@ -43,14 +43,14 @@ VALVE6 = 6
 # speed = pwm duty cycle, 0 = off, 100 = max
 speed = 100
 #todo
-# pi.set_mode(PUMPIN, pigpio.OUTPUT)
-# pi.set_mode(PUMPOUT, pigpio.OUTPUT)
-# pi.set_mode(VALVE1, pigpio.OUTPUT)
-# pi.set_mode(VALVE_out, pigpio.OUTPUT)
-# pi.set_mode(VALVE3, pigpio.OUTPUT)
-# pi.set_mode(VALVE4, pigpio.OUTPUT)
-# pi.set_mode(VALVE5, pigpio.OUTPUT)
-# pi.set_mode(VALVE6, pigpio.OUTPUT)
+pi.set_mode(PUMPIN, pigpio.OUTPUT)
+pi.set_mode(PUMPOUT, pigpio.OUTPUT)
+pi.set_mode(VALVE1, pigpio.OUTPUT)
+pi.set_mode(VALVE_out, pigpio.OUTPUT)
+pi.set_mode(VALVE3, pigpio.OUTPUT)
+pi.set_mode(VALVE4, pigpio.OUTPUT)
+pi.set_mode(VALVE5, pigpio.OUTPUT)
+pi.set_mode(VALVE6, pigpio.OUTPUT)
 
 
 # todo fix load
@@ -120,8 +120,8 @@ def stop():
     form = RegistrationForm(request.form)
     return render_template("setting.html", form=form)
     #todo
-    # pi.stop()
-    # GPIO.cleanup()
+    pi.stop()
+    GPIO.cleanup()
 
 # called from webpage -> pressurise the wheel up to 7psi then turn of pumps
 # todo pressurise the wheel up to 7psi then turn of pumps
@@ -188,6 +188,7 @@ def control_motor():
             g.data_pumpIn = lambda: "Hello"
             g.data_pumpOut = lambda: "World"
     return 'ok'
+
 
 # This function will continuously remove pressure to the wheel for x of the wheel
 #todo
