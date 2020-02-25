@@ -217,10 +217,12 @@ def pressure_low():
 
 
 # Set Ideal Pressure and converts volts to pressure
+#todo
+# Add Equtions
 def volts_to_pressure(wheels):
     volts = wheels.read_sensor()
     if g.mode == 1:
-        pressure = list(map(lambda x: x, volts))  # returns static and position up
+        pressure = list(map(lambda x: 0.051*x+3.0582, volts))  # returns static and position up
         g.ideal = 3.5
     elif g.mode == 2:
         pressure = list(map(lambda x: x ** 2, volts))  # returns Down force
