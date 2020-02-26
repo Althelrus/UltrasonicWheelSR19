@@ -127,14 +127,14 @@ def stop():
 # todo pressurise the wheel up to 7psi then turn of pumps
 @app.route('/pressurise', methods=['POST'])
 def pressurise():
-    form = RegistrationForm(request.form)
+    # todo call pressurization routine
     return render_template("setting.html", form=form)
 
 # called from Webpage -> almost drain the entire wheel
 # todo almost drain the entire wheel
 @app.route('/depressurise', methods=['POST'])
 def depressurise():
-    form = RegistrationForm(request.form)
+    # todo call depressurization routine
     return render_template("setting.html", form=form)
 
 
