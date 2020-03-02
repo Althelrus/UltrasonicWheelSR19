@@ -1,6 +1,6 @@
 var chart, chart1, chart2;
-var control;
-var act_wheels;
+var control_motor;
+var act_wheels_arry;
 
 /**
  * Request data from the server, add it to the graph and set a timeout
@@ -21,7 +21,7 @@ function act_wheels() {
         url: '/act_wheels',
         success: function() {
             // call it again after one second
-            setTimeout(control(), 100000);
+            setTimeout(act_wheels(), 100000);
         },
         cache: false
     });
@@ -31,7 +31,7 @@ function requestData() {
         url: '/live-data',
         success: function(point) {
             var series = chart.series[0],
-                shift = series.data.length > 20; // shift if the series is
+                shift = series.data.length > 30; // shift if the series is
                                                  // longer than 20
 
             // add the point
@@ -77,11 +77,10 @@ function requestData3() {
         cache: false
     });
 }
-
 $(document).ready(function() {
-    control()
-    act_wheels = act_wheels()
-    if act_wheels[0] = 1{
+    control_motor = control()
+    act_wheels_arry = [1,0,0]//act_wheels()
+    if (act_wheels_arry[0] = 1){
         chart = new Highcharts.Chart({
             chart: {
                 renderTo: 'data-container',
@@ -91,7 +90,7 @@ $(document).ready(function() {
                 }
             },
             title: {
-                text: 'Pressure"
+                text: 'Pressure'
             },
             xAxis: {
                 type: 'datetime',
@@ -112,7 +111,7 @@ $(document).ready(function() {
             }]
         });
     }
-    if act_wheels[1] = 1{
+    if (act_wheels_arry[1] = 1){
         chart1 = new Highcharts.Chart({
             chart: {
                 renderTo: 'data-container2',
@@ -122,7 +121,7 @@ $(document).ready(function() {
                 }
             },
             title: {
-                text: 'Live random data'
+                text: 'Pressure'
             },
             xAxis: {
                 type: 'datetime',
@@ -143,7 +142,7 @@ $(document).ready(function() {
             }]
         });
     }
-    if act_wheels[2] = 1{
+    if (act_wheels_arry[2] = 1){
         chart2 = new Highcharts.Chart({
             chart: {
                 renderTo: 'data-container3',

@@ -154,8 +154,9 @@ def act_wheels():
 def live_data():
     # Create a PHP array and echo it as JSON
     wheels = Wheel()
-    volts = wheels.read_sensor()
-    data = [time.time() * 1000, volts[1]]
+    volts = [3.2,3.11,3.11] #wheels.read_sensor()
+    #volts[1]
+    data = [time.time() * 1000, 3.5]
     response = make_response(json.dumps(data))
     response.content_type = 'application/json'
     return response
@@ -220,7 +221,7 @@ def pressure_low():
 #todo
 # Add Equtions
 def volts_to_pressure(wheels):
-    volts = wheels.read_sensor()
+    volts = [3.2,3.11,3.11] #wheels.read_sensor()
     if g.mode == 1:
         pressure = list(map(lambda x: 0.051*x+3.0582, volts))  # returns static and position up
         g.ideal = 3.5
@@ -284,7 +285,6 @@ class RegistrationForm(wtforms.Form):
 # todo move to separate file
 class Wheel:
     def read_sensor(self):
-        print("Read")
         ads = ADS1256()
         ads.cal_self()
         EXT2, EXT3, EXT4 = POS_AIN2 | NEG_AINCOM, POS_AIN3 | NEG_AINCOM, POS_AIN4 | NEG_AINCOM
