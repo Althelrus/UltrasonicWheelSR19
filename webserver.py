@@ -215,7 +215,7 @@ def pressure_high():
         print("HIGH RUN")
 
     wheels.control_valve(VALVE_out, 0)
-    wheels.control_pump(PUMPOUT, 100)
+    wheels.control_pump(PUMPOUT, 150)
 
 
 # This function will continuously add pressure to the wheel for x of the wheel
