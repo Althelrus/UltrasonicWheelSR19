@@ -30,10 +30,10 @@ pi = pigpio.pi()  # Connect to local Pi.
 #########################
 # Motor PINs
 # todo -> have the pins setup in the class on init to pass in pin locations
-PUMPIN = 16
-PUMPOUT = 12
-VALVE1 = 25
-VALVE_out = 24
+PUMPIN = 12
+PUMPOUT = 5
+VALVE1 = 13
+VALVE_out = 6
 VALVE2 = 33
 VALVE3 = 23
 VALVE4 = 26
@@ -82,7 +82,9 @@ def before_request():
     g.data_valveStatus = lambda: ' '.join(map(str, g.w_act))
     g.data_pumpIn = lambda: "Off"   # todo test
     g.data_pumpOut = lambda: "Off"  # todo test
-    g.w_act = [1, 0, 0, 0, 0, 0]  # This is the default active wheels todo test
+    wheels = Wheel()
+    volts = wheels.read_sensor()
+    g.w_act = str(list(volts))  # This is the default active wheels todo test
 
 
 # Home page of the website
@@ -120,22 +122,22 @@ def stop():
     form = RegistrationForm(request.form)
     return render_template("setting.html", form=form)
     #todo
-    pi.stop()
-    GPIO.cleanup()
+    #pi.stop()
+    #GPIO.cleanup()
 
 # called from webpage -> pressurise the wheel up to 7psi then turn of pumps
 # todo pressurise the wheel up to 7psi then turn of pumps
 @app.route('/pressurise', methods=['POST'])
 def pressurise():
     # todo call pressurization routine
-    return render_template("setting.html", form=form)
+    return render_template("setting.html")
 
 # called from Webpage -> almost drain the entire wheel
 # todo almost drain the entire wheel
 @app.route('/depressurise', methods=['POST'])
 def depressurise():
     # todo call depressurization routine
-    return render_template("setting.html", form=form)
+    return render_template("setting.html")
 
 
 # for setting the javascript variable on active wheels called from javascripts
@@ -154,9 +156,9 @@ def act_wheels():
 def live_data():
     # Create a PHP array and echo it as JSON
     wheels = Wheel()
-    volts = [3.2,3.11,3.11] #wheels.read_sensor()
-    #volts[1]
-    data = [time.time() * 1000, 3.5]
+    volts = wheels.read_sensor()
+    print(volts)
+    data = [time.time() * 1000, volts_to_pressure(volts)[1]]
     response = make_response(json.dumps(data))
     response.content_type = 'application/json'
     return response
@@ -166,25 +168,30 @@ def live_data():
 # function gets called from javascript
 @app.route('/control_motor')
 def control_motor():
-    g.wheels = Wheel()
-    pressure = volts_to_pressure(g.wheels)
+    wheels = Wheel()
+    volts = wheels.read_sensor()
+    pressure = volts_to_pressure(volts)
     for x in pressure:
-        if pressure[x] == g.ideal:
+        print(x)
+        if pressure[1] == g.ideal:
+            print("Good")
             g.data_pumpIn = lambda: "Off"
             g.data_pumpOut = lambda: "Off"
-        elif (pressure[x] - g.delta) <= g.ideal:
+        elif (x - .2) <= g.ideal:
+            print("low")
             g.data_pumpIn = lambda: "On"
             g.data_pumpOut = lambda: "Off"
             g.gx = x
-            t = AppContextThread(target=pressure_low)
-            t.start()
-            t.join()
-        elif (pressure[x] + g.delta) >= g.ideal:
+            pressure_low()
+            #t.start()
+            #t.join()
+        elif (pressure[1] + .2) >= g.ideal:
+            print("high")
             g.data_pumpIn = lambda: "Off"
             g.data_pumpOut = lambda: "On"
-            t = AppContextThread(target=pressure_high)
-            t.start()
-            t.join()
+            pressure_high()
+            #t.start()
+            #t.join()
         else:
             g.data_pumpIn = lambda: "Hello"
             g.data_pumpOut = lambda: "World"
@@ -195,35 +202,45 @@ def control_motor():
 #todo
 # add ablity to have the pumps vary in speed
 def pressure_high():
-    while (volts_to_pressure(g.wheels)[g.gx]) >= (g.ideal - g.delta - 0.05):
-        g.wheels.control_valve(VALVE_out, 1)
-        g.wheels.control_pump(PUMPOUT, 0)
+    wheels = Wheel()
+    print("HIGH RUN")
+    volts = wheels.read_sensor()
+    wheels.control_valve(VALVE1, 0)
+    if (volts_to_pressure(wheels)[1]) >= (3.5 - .2 - 0.05):
+        print(volts_to_pressure(volts)[1])
+        wheels.control_valve(VALVE_out, 1)
+        wheels.control_pump(PUMPOUT, 0)
         time.sleep(.01)
-        g.wheels.control_valve(VALVE_out, 1)
+        wheels.control_valve(VALVE_out, 1)
+        print("HIGH RUN")
 
-    g.wheels.control_valve(VALVE_out, 0)
-    g.wheels.control_pump(PUMPOUT, 100)
+    wheels.control_valve(VALVE_out, 0)
+    wheels.control_pump(PUMPOUT, 100)
 
 
 # This function will continuously add pressure to the wheel for x of the wheel
 #todo
 # add ablity to have the pumps vary in speed
 def pressure_low():
-    g.wheels.control_valve(VALVE1, 1)
-    while (volts_to_pressure(g.wheels)[g.gx]) <= (g.ideal + g.delta - 0.05):
-        g.wheels.control_pump(PUMPOUT, 0)
-
-    g.wheels.control_valve(VALVE1, 0)
-    g.wheels.control_pump(PUMPOUT, 100)
+    wheels = Wheel()
+    print("LOW RUN")
+    volts = wheels.read_sensor()
+    wheels.control_valve(VALVE_out, 0)
+    wheels.control_valve(VALVE1, 1)
+    if (volts_to_pressure(volts)[1]) <= (3.5 + .2 - 0.05):
+        print(volts_to_pressure(volts)[1])
+        wheels.control_pump(PUMPIN, 200)
+        print("LOW RUN")
+    wheels.control_valve(VALVE1, 0)
 
 
 # Set Ideal Pressure and converts volts to pressure
 #todo
 # Add Equtions
-def volts_to_pressure(wheels):
-    volts = [3.2,3.11,3.11] #wheels.read_sensor()
-    if g.mode == 1:
-        pressure = list(map(lambda x: 0.051*x+3.0582, volts))  # returns static and position up
+def volts_to_pressure(volts):
+    print(volts)
+    if 1 == 1: #todo Change back
+        pressure = list(map(lambda x: -3.636363*(0.6-x), volts))  # returns static and position up
         g.ideal = 3.5
     elif g.mode == 2:
         pressure = list(map(lambda x: x ** 2, volts))  # returns Down force
@@ -287,6 +304,7 @@ class Wheel:
     def read_sensor(self):
         ads = ADS1256()
         ads.cal_self()
+        POTI = POS_AIN0|NEG_AINCOM
         EXT2, EXT3, EXT4 = POS_AIN2 | NEG_AINCOM, POS_AIN3 | NEG_AINCOM, POS_AIN4 | NEG_AINCOM
         EXT5, EXT6, EXT7 = POS_AIN5 | NEG_AINCOM, POS_AIN6 | NEG_AINCOM, POS_AIN7 | NEG_AINCOM
         CH_SEQUENCE = (EXT2, EXT3, EXT4, EXT7)
