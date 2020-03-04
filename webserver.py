@@ -276,7 +276,7 @@ def setting_data():
     print(g.data)
     return render_template('setting.html', form=form)
 
-
+#todo complete-remove
 # This Class makes the Registration Form
 class RegistrationForm(wtforms.Form):
     delta = wtforms.FloatField('Delta', default="0.3")
@@ -297,7 +297,7 @@ class RegistrationForm(wtforms.Form):
 
 
 # This Class Communicates with all of the sensors and pumps
-# todo move to separate file
+# todo complete- remove
 class Wheel:
     def read_sensor(self):
         ads = ADS1256()
