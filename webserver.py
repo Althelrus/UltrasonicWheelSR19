@@ -278,7 +278,6 @@ def setting_data():
 
 
 # This Class makes the Registration Form
-# todo move to separate file
 class RegistrationForm(wtforms.Form):
     delta = wtforms.FloatField('Delta', default="0.3")
     activewheels1 = wtforms.BooleanField('Active Wheels 1', default=True)
