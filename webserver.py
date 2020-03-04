@@ -4,15 +4,21 @@
 # http://pwp.stevecassidy.net/bottle/forms-processing.html
 # http://abyz.me.uk/rpi/pigpio/python.html
 
-import json
-import os
-import time
+
 import wtforms
 from flask import Flask, render_template, make_response, request, g
 from flaskthreads import AppContextThread
+from UltrasonicWheelSR19.Wheel import *
+from UltrasonicWheelSR19.regform import *
+from UltrasonicWheelSR19.SaveConstraints import *
+from UltrasonicWheelSR19.ADS1256_definitions import *
+from UltrasonicWheelSR19.pipyadc import ADS1256
 #todo
-from ADS1256_definitions import *
-from pipyadc import ADS1256
+#from UltrasonicWheelSR19.Wheel import *
+#from UltrasonicWheelSR19.regform import *
+#from UltrasonicWheelSR19.SaveConstraints import *
+#from UltrasonicWheelSR19.ADS1256_definitions import *
+#from UltrasonicWheelSR19.pipyadc import ADS1256
 
 app = Flask(__name__, template_folder='html')
 #todo
@@ -57,6 +63,8 @@ def start_up():
     # g.list1 = []
     # for p in g.loaded_data:
     #    g.list1.append(p)
+    g.sensors = Sensor.__init__()
+    g.wheels = Wheel.__init__()
     g.data_pumpIn = lambda: "Off"
     g.data_pumpOut = lambda: "Off"
     g.delta = .2  # This value is used to find the upper and lower bounds of the ideal todo read from data
@@ -193,36 +201,34 @@ def control_motor():
 #todo
 # add ablity to have the pumps vary in speed
 def pressure_high():
-    wheels = Wheel()
     print("HIGH RUN")
-    volts = wheels.read_sensor()
-    wheels.control_valve(VALVE1, 0)
-    if (volts_to_pressure(wheels)[1]) >= (3.5 - .2 - 0.05):
+    volts = g.sensors.read_sensor()
+    g.wheels.control_valve(VALVE1, 0)
+    if (volts_to_pressure(g.wheels)[1]) >= (3.5 - .2 - 0.05):
         print(volts_to_pressure(volts)[1])
-        wheels.control_valve(VALVE_out, 1)
-        wheels.control_pump(PUMPOUT, 0)
+        g.wheels.control_valve(VALVE_out, 1)
+        g.wheels.control_pump(PUMPOUT, 0)
         time.sleep(.01)
-        wheels.control_valve(VALVE_out, 1)
+        g.wheels.control_valve(VALVE_out, 1)
         print("HIGH RUN")
 
-    wheels.control_valve(VALVE_out, 0)
-    wheels.control_pump(PUMPOUT, 150)
+    g.wheels.control_valve(VALVE_out, 0)
+    g.wheels.control_pump(PUMPOUT, 150)
 
 
 # This function will continuously add pressure to the wheel for x of the wheel
 #todo
 # add ablity to have the pumps vary in speed
 def pressure_low():
-    wheels = Wheel()
     print("LOW RUN")
-    volts = wheels.read_sensor()
-    wheels.control_valve(VALVE_out, 0)
+    volts = g.sensors.read_sensor()
+    g.wheels.control_valve(VALVE_out, 0)
     wheels.control_valve(VALVE1, 1)
     if (volts_to_pressure(volts)[1]) <= (3.5 + .2 - 0.05):
         print(volts_to_pressure(volts)[1])
-        wheels.control_pump(PUMPIN, 200)
+        g.wheels.control_pump(PUMPIN, 200)
         print("LOW RUN")
-    wheels.control_valve(VALVE1, 0)
+    g.wheels.control_valve(VALVE1, 0)
 
 
 # Set Ideal Pressure and converts volts to pressure
@@ -243,7 +249,6 @@ def volts_to_pressure(volts):
         pressure = list(map(lambda x: x, volts))  # returns volts
         g.ideal = 3.5
     return pressure
-
 
 # this is called when someone submits anything in settings
 # todo save data in here
@@ -267,61 +272,6 @@ def setting_data():
               form.pumplocation2.data]
     print(g.data)
     return render_template('setting.html', form=form)
-
-#todo complete-remove
-# This Class makes the Registration Form
-class RegistrationForm(wtforms.Form):
-    delta = wtforms.FloatField('Delta', default="0.3")
-    activewheels1 = wtforms.BooleanField('Active Wheels 1', default=True)
-    activewheels2 = wtforms.BooleanField('Active Wheels 2')
-    activewheels3 = wtforms.BooleanField('Active Wheels 3')
-    activewheels4 = wtforms.BooleanField('Active Wheels 4')
-    activewheels5 = wtforms.BooleanField('Active Wheels 5')
-    activewheels6 = wtforms.BooleanField('Active Wheels 6')
-    valvelocation1 = wtforms.StringField('Valve Location 1', [wtforms.validators.Length(min=0, max=3)], default="25")
-    valvelocation2 = wtforms.StringField('Valve Location 2', [wtforms.validators.Length(min=0, max=3)], default="33")
-    valvelocation3 = wtforms.StringField('Valve Location 3', [wtforms.validators.Length(min=0, max=3)], default="23")
-    valvelocation4 = wtforms.StringField('Valve Location 4', [wtforms.validators.Length(min=0, max=3)], default="24")
-    valvelocation5 = wtforms.StringField('Valve Location 5', [wtforms.validators.Length(min=0, max=3)], default="13")
-    valvelocation6 = wtforms.StringField('Valve Out Location', [wtforms.validators.Length(min=0, max=3)], default="24")
-    pumplocation1 = wtforms.StringField('Pump In Location 1', [wtforms.validators.Length(min=0, max=3)], default="16")
-    pumplocation2 = wtforms.StringField('Pump Out Location 2', [wtforms.validators.Length(min=0, max=3)], default="12")
-
-
-# This Class Communicates with all of the sensors and pumps
-# todo complete- remove
-class Wheel:
-    def read_sensor(self):
-        ads = ADS1256()
-        ads.cal_self()
-        POTI = POS_AIN0|NEG_AINCOM
-        EXT2, EXT3, EXT4 = POS_AIN2 | NEG_AINCOM, POS_AIN3 | NEG_AINCOM, POS_AIN4 | NEG_AINCOM
-        EXT5, EXT6, EXT7 = POS_AIN5 | NEG_AINCOM, POS_AIN6 | NEG_AINCOM, POS_AIN7 | NEG_AINCOM
-        CH_SEQUENCE = (EXT2, EXT3, EXT4, EXT5, EXT6, EXT7)
-        raw_channels = ads.read_sequence(CH_SEQUENCE)
-        voltages = [i * ads.v_per_digit for i in raw_channels]
-        return voltages
-
-    def control_valve(self, location, value):
-        pi.write(location, value)
-
-    def control_pump(self, location, dutyratio):
-        pi.set_PWM_dutycycle(location, dutyratio)
-
-
-# This Saves and loads the config
-# todo move to separate file
-class SaveConstants:
-    def saveconfig(self, data):
-        with open('/home/pi/Desktop/UltrsonicWheelSR19/data.txt', 'w') as outfile:
-            json.dump(data, outfile, indent=4)
-
-    def loadconfig(self):
-        print("load")
-        with open('/home/pi/Desktop/UltrsonicWheelSR19/data.txt') as json_file:
-            data = json.load(json_file)
-        return data
-
 
 # Starts the Web application on the hostname
 if __name__ == '__main__':
