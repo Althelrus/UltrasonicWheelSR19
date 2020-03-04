@@ -53,10 +53,21 @@ class Wheel:
 if __name__ == '__main__':
     sensors = Sensor.__init__()
     wheels = Wheel.__init__()
-    while True:
-        voltages = sensors.read_sensor()
-        print(voltages)
-        wheels.control_valve(VALVE1, 1)
-        wheels.control_pump(PUMPIN, 255)
-
-
+    voltages = sensors.read_sensor()
+    print(voltages)
+    wheels.control_valve(VALVE1, 1)
+    wheels.control_pump(PUMPIN, 255)
+    time.sleep(1)
+    voltages = sensors.read_sensor()
+    print(voltages)
+    time.sleep(1)
+    voltages = sensors.read_sensor()
+    print(voltages)
+    time.sleep(1)
+    voltages = sensors.read_sensor()
+    print(voltages)
+    time.sleep(1)
+    voltages = sensors.read_sensor()
+    print(voltages)
+    wheels.control_valve(VALVE1, 0)
+    wheels.control_pump(PUMPIN, 0)
