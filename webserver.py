@@ -15,7 +15,6 @@ from ADS1256_definitions import *
 from pipyadc import ADS1256
 
 app = Flask(__name__, template_folder='html')
-
 #todo
 import pigpio
 pi = pigpio.pi()  # Connect to local Pi.
@@ -277,9 +276,8 @@ def setting_data():
     print(g.data)
     return render_template('setting.html', form=form)
 
-
+#todo complete-remove
 # This Class makes the Registration Form
-# todo move to separate file
 class RegistrationForm(wtforms.Form):
     delta = wtforms.FloatField('Delta', default="0.3")
     activewheels1 = wtforms.BooleanField('Active Wheels 1', default=True)
@@ -299,7 +297,7 @@ class RegistrationForm(wtforms.Form):
 
 
 # This Class Communicates with all of the sensors and pumps
-# todo move to separate file
+# todo complete- remove
 class Wheel:
     def read_sensor(self):
         ads = ADS1256()
