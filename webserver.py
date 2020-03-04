@@ -15,7 +15,6 @@ from ADS1256_definitions import *
 from pipyadc import ADS1256
 
 app = Flask(__name__, template_folder='html')
-
 #todo
 import pigpio
 pi = pigpio.pi()  # Connect to local Pi.
