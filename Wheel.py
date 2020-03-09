@@ -55,11 +55,11 @@ class Wheel:
 if __name__ == '__main__':
     s = Sensor()
     w = Wheel()
-    for x in range(100):
+    for x in range(10):
         voltages = s.read_sensor()
         print(voltages)
         w.control_valve(VALVE1, 1)
-        w.control_pump(PUMPIN, 255)
+        w.control_pump(PUMPIN, 100)
         time.sleep(1)
         voltages = s.read_sensor()
         print(voltages)
