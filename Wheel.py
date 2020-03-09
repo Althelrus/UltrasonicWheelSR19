@@ -32,13 +32,13 @@ class Wheel:
     def __init__(self):
         self.pi = pigpio.pi()  # Connect to local Pi.
         self.pi.set_mode(PUMPIN, pigpio.OUTPUT)
-        self.pi.write(PUMPIN, 0)
+        self.pi.set_PWM_dutycycle(PUMPIN, 0)
         time.sleep(1)
         self.pi.set_mode(PUMPOUT, pigpio.OUTPUT)
-        self.pi.write(PUMPOUT, 0)
+        self.pi.set_PWM_dutycycle(PUMPOUT, 0)
         time.sleep(1)
         self.pi.set_mode(VALVE1, pigpio.OUTPUT)
-        self.pi.write(VALVE1, 0)
+        self.pi.write(VALVE1, 1)
         time.sleep(1)
         self.pi.set_mode(VALVE_out, pigpio.OUTPUT)
         self.pi.write(VALVE_out, 0)
