@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 import time
+from ADS1256_definitions import *
 
 PUMPIN = 12
 PUMPOUT = 5
@@ -12,7 +13,6 @@ VALVE_out = 6
 
 class Sensor:
     def __init__(self):
-        from ADS1256_definitions import *
         from pipyadc import ADS1256
         POTI = POS_AIN0 | NEG_AINCOM
         EXT2, EXT3, EXT4 = POS_AIN2 | NEG_AINCOM, POS_AIN3 | NEG_AINCOM, POS_AIN4 | NEG_AINCOM
