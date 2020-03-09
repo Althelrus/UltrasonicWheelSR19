@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import time
 from ADS1256_definitions import *
+import pigpio
 
 PUMPIN = 12
 PUMPOUT = 5
@@ -29,7 +30,6 @@ class Sensor:
 
 class Wheel:
     def __init__(self):
-        import pigpio
         self.pi = pigpio.pi()  # Connect to local Pi.
         self.pi.set_mode(PUMPIN, pigpio.OUTPUT)
         self.pi.write(PUMPIN, 0)
