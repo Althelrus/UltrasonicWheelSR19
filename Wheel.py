@@ -38,7 +38,7 @@ class Wheel:
         self.pi.set_PWM_dutycycle(PUMPOUT, 0)
         time.sleep(1)
         self.pi.set_mode(VALVE1, pigpio.OUTPUT)
-        self.pi.write(VALVE1, 1)
+        self.pi.write(VALVE1, 0)
         time.sleep(1)
         self.pi.set_mode(VALVE_out, pigpio.OUTPUT)
         self.pi.write(VALVE_out, 0)
