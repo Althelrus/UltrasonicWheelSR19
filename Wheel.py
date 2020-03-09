@@ -53,8 +53,10 @@ class Wheel:
 
 # Test
 if __name__ == '__main__':
-    sensors = Sensor.__init__()
-    wheels = Wheel.__init__()
+    s = Sensor()
+    w = Wheel()
+    sensors = Sensor.__init__(s)
+    wheels = Wheel.__init__(w)
     voltages = sensors.read_sensor()
     print(voltages)
     wheels.control_valve(VALVE1, 1)

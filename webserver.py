@@ -81,9 +81,7 @@ def before_request():
     g.data_valveStatus = lambda: ' '.join(map(str, g.w_act))
     g.data_pumpIn = lambda: "Off"   # todo test
     g.data_pumpOut = lambda: "Off"  # todo test
-    wheels = Wheel()
-    volts = wheels.read_sensor()
-    g.w_act = str(list(volts))  # This is the default active wheels todo test
+    g.w_act = [1, 0, 0, 0, 0, 0]   # This is the default active wheels todo test
 
 
 # Home page of the website
@@ -154,8 +152,8 @@ def act_wheels():
 @app.route('/live-data')
 def live_data():
     # Create a PHP array and echo it as JSON
-    wheels = Wheel()
-    volts = wheels.read_sensor()
+    sensors = Sensor()
+    volts = sensors.read_sensor()
     print(volts)
     data = [time.time() * 1000, volts_to_pressure(volts)[1]]
     response = make_response(json.dumps(data))
