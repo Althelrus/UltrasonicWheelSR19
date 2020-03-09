@@ -41,7 +41,7 @@ class Wheel:
         self.pi.write(VALVE1, 0)
         time.sleep(1)
         self.pi.set_mode(VALVE_out, pigpio.OUTPUT)
-        self.pi.write(VALVE_out, 0)
+        self.pi.write(VALVE_out, 1)
         time.sleep(1)
         print("Wheel Init")
 
