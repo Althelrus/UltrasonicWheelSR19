@@ -59,7 +59,7 @@ if __name__ == '__main__':
         voltages = s.read_sensor()
         print(voltages)
         w.control_valve(VALVE1, 1)
-        w.control_pump(PUMPIN, 225)
+        w.control_pump(PUMPIN, 255)
         time.sleep(1)
         voltages = s.read_sensor()
         print(voltages)
