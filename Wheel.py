@@ -51,6 +51,18 @@ class Wheel:
     def control_pump(self, location, dutyratio):
         self.pi.set_PWM_dutycycle(location, dutyratio)
 
+    def control_pump_reset(self, location):
+        self.pi.set_PWM_dutycycle(location, 0)
+
+    def control_pump_low(self, location):
+        self.pi.set_PWM_dutycycle(location, 150)
+
+    def control_pump_med(self, location):
+        self.pi.set_PWM_dutycycle(location, 200)
+
+    def control_pump_high(self, location):
+        self.pi.set_PWM_dutycycle(location, 250)
+
 # Test
 if __name__ == '__main__':
     s = Sensor()
