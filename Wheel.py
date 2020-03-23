@@ -18,7 +18,7 @@ class Sensor:
         POTI = POS_AIN0 | NEG_AINCOM
         EXT2, EXT3, EXT4 = POS_AIN2 | NEG_AINCOM, POS_AIN3 | NEG_AINCOM, POS_AIN4 | NEG_AINCOM
         EXT5, EXT6, EXT7 = POS_AIN5 | NEG_AINCOM, POS_AIN6 | NEG_AINCOM, POS_AIN7 | NEG_AINCOM
-        self.CH_SEQUENCE = (EXT2, EXT3, EXT4, EXT7)
+        self.CH_SEQUENCE = (EXT2, EXT3, EXT4, EXT5, EXT6, EXT7)
         self.ads = ADS1256()
         self.ads.cal_self()
         print("Sensor Init")
@@ -62,6 +62,7 @@ class Wheel:
 
     def control_pump_high(self, location):
         self.pi.set_PWM_dutycycle(location, 250)
+
 
 # Test
 if __name__ == '__main__':

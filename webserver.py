@@ -63,8 +63,10 @@ def start_up():
     # g.list1 = []
     # for p in g.loaded_data:
     #    g.list1.append(p)
-    g.sensors = Sensor.__init__()
-    g.wheels = Wheel.__init__()
+    g.s = Sensor()
+    g.w = Wheel()
+    g.state = "OFF"
+    g.running = False
     g.data_pumpIn = lambda: "Off"
     g.data_pumpOut = lambda: "Off"
     g.delta = .2  # This value is used to find the upper and lower bounds of the ideal todo read from data
@@ -152,8 +154,7 @@ def act_wheels():
 @app.route('/live-data')
 def live_data():
     # Create a PHP array and echo it as JSON
-    sensors = Sensor()
-    volts = sensors.read_sensor()
+    volts = g.s.read_sensor()
     print(volts)
     data = [time.time() * 1000, volts_to_pressure(volts)[1]]
     response = make_response(json.dumps(data))
@@ -161,38 +162,31 @@ def live_data():
     return response
 
 
-# todo add threading call
 # function gets called from javascript
 @app.route('/control_motor')
 def control_motor():
-    wheels = Wheel()
-    volts = wheels.read_sensor()
+    volts = g.s.read_sensor()
     pressure = volts_to_pressure(volts)
-    for x in pressure:
-        print(x)
-        if pressure[1] == g.ideal:
-            print("Good")
-            g.data_pumpIn = lambda: "Off"
-            g.data_pumpOut = lambda: "Off"
-        elif (x - .2) <= g.ideal:
-            print("low")
-            g.data_pumpIn = lambda: "On"
-            g.data_pumpOut = lambda: "Off"
-            g.gx = x
-            pressure_low()
-            #t.start()
-            #t.join()
-        elif (pressure[1] + .2) >= g.ideal:
-            print("high")
-            g.data_pumpIn = lambda: "Off"
-            g.data_pumpOut = lambda: "On"
-            pressure_high()
-            #t.start()
-            #t.join()
-        else:
-            g.data_pumpIn = lambda: "Hello"
-            g.data_pumpOut = lambda: "World"
-    return 'ok'
+    if pressure[1] >= (3.5 + .2 + 0.05):
+        g.state = "HIGH"
+    elif pressure[1] <= (3.5 - .2 - 0.05):
+        g.state = "LOW"
+    else:
+        g.state = "OFF"
+
+    if g.state == "OFF" and (pressure[1] >= (3.5 + .2) or pressure[1] <= (3.5 - .2)):
+        g.w.control_pump_reset(PUMPIN)
+        g.w.control_pump_reset(PUMPOUT)
+        voltages = s.read_sensor()
+        print(voltages)
+    elif g.state == "LOW" and g.running == False:
+        g.running = True
+        pressure_low()
+    elif g.state == "HIGH" and g.running == False:
+        g.running = True
+        pressure_high()
+    else:
+        g.state = g.state
 
 
 # This function will continuously remove pressure to the wheel for x of the wheel
@@ -200,18 +194,7 @@ def control_motor():
 # add ablity to have the pumps vary in speed
 def pressure_high():
     print("HIGH RUN")
-    volts = g.sensors.read_sensor()
-    g.wheels.control_valve(VALVE1, 0)
-    if (volts_to_pressure(g.wheels)[1]) >= (3.5 - .2 - 0.05):
-        print(volts_to_pressure(volts)[1])
-        g.wheels.control_valve(VALVE_out, 1)
-        g.wheels.control_pump(PUMPOUT, 0)
-        time.sleep(.01)
-        g.wheels.control_valve(VALVE_out, 1)
-        print("HIGH RUN")
-
-    g.wheels.control_valve(VALVE_out, 0)
-    g.wheels.control_pump(PUMPOUT, 150)
+    g.w.control_pump_med(PUMPOUT)
 
 
 # This function will continuously add pressure to the wheel for x of the wheel
@@ -219,14 +202,7 @@ def pressure_high():
 # add ablity to have the pumps vary in speed
 def pressure_low():
     print("LOW RUN")
-    volts = g.sensors.read_sensor()
-    g.wheels.control_valve(VALVE_out, 0)
-    wheels.control_valve(VALVE1, 1)
-    if (volts_to_pressure(volts)[1]) <= (3.5 + .2 - 0.05):
-        print(volts_to_pressure(volts)[1])
-        g.wheels.control_pump(PUMPIN, 200)
-        print("LOW RUN")
-    g.wheels.control_valve(VALVE1, 0)
+    g.w.control_pump_med(PUMPIN)
 
 
 # Set Ideal Pressure and converts volts to pressure
@@ -234,7 +210,7 @@ def pressure_low():
 # Add Equtions
 def volts_to_pressure(volts):
     print(volts)
-    if 1 == 1: #todo Change back
+    if g.mode == 1: #todo Change back
         pressure = list(map(lambda x: -3.636363*(0.6-x), volts))  # returns static and position up
         g.ideal = 3.5
     elif g.mode == 2:
